@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from '@/lib/components/ui/button';
-import { Component } from '@/lib/components/utils/component';
+import { BlackjackButton } from '@/lib/components/ui/blackjack/blackjack-button';
+import type { Component } from '@/lib/components/utils/component';
 import { IterationCcw } from 'lucide-react';
 import { useEffect } from 'react'
 
@@ -23,10 +23,10 @@ const Error: Component<{
         {error.message}
       </p>
 
-      <Button variant="outline" onClick={reset}>
+      <BlackjackButton onClick={reset}>
         <IterationCcw className="w-4 h-4 mr-2" />
         Try again
-      </Button>
+      </BlackjackButton>
     </div>
   )
 }

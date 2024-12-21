@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { Component } from "@/lib/components/utils/component";
-import { PropsWithChildren } from "react";
 import { ThemeProvider } from "@/lib/components/providers/theme-provider";
 import { Toaster } from "sonner";
+import { BlackjackButtons } from "@/lib/components/blackjack-menu";
+import type { PropsWithChildren } from "react";
+import type { Component } from "@/lib/components/utils/component";
 
 const monterserrat = Montserrat({ subsets: ["latin"] });
 
@@ -49,15 +50,15 @@ export const viewport: Viewport = {
 const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
-      <body className={`rounded-lg ${monterserrat.className} antialiased bg-background dark:bg-[#121212]`}>
-        {process.env.NEXT_PUBLIC_ENV !== "dev" && (
-          <script defer src="https://www.woyage.app/track.js" data-website-id="ffd6eb05-59b1-4fa2-8a47-225c12ca64f8"></script>
-        )}
-        
+      <body className={`rounded-lg ${monterserrat.className} antialiased bg-background dark:bg-[#121212]`}>        
         <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
-          <Toaster richColors />
-
-          {children}
+          <div className="flex items-center justify-center h-screen w-screen bg-green-900 relative text-white">
+            <BlackjackButtons />
+            
+            <Toaster richColors />
+            
+            {children}
+          </div>
         </ThemeProvider>
       </body>
     </html>
