@@ -1,7 +1,7 @@
 "use client";
 
-import { ReactElement } from "react";
-import { BlackjackBoard } from "./blackjack/_components/blackjack-board";
+import { BlackjackBoard } from "@/lib/components/blackjack-board";
+import type { ReactElement } from "react";
 
 const Home = (): ReactElement => {
   return (

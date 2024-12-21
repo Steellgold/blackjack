@@ -1,8 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import { Card, GameStatus, SEC_TO_BET } from "../blackjack.types";
 import { createDeck, getValueFromRank, shuffle } from "../blackjack.utils";
+import { SEC_TO_BET, type Card, type GameStatus } from "../types/blackjack.types";
 
 type BlackjackState = {
   balance: number;
@@ -143,6 +143,8 @@ export const useBlackjack = create<BlackjackState>((set, get) => ({
     if (state.bets.length === 0) return state;
 
     const lastBet = state.bets[state.bets.length - 1];
+    if (lastBet === undefined) return state;
+
     return {
       bets: state.bets.slice(0, -1),
       balance: state.balance + lastBet,
