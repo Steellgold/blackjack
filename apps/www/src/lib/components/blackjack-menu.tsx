@@ -1,10 +1,8 @@
 "use client";
 
-import { ArrowLeft, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
 import { useLang } from "@/lib/hooks/use-lang";
-import { useBlackjack } from "../hooks/use-blackjack";
 import type { ReactElement } from "react";
 import { BlackjackButton } from "./ui/blackjack/blackjack-button";
 
@@ -12,11 +10,9 @@ export const BlackjackButtons = (): ReactElement => {
   const { theme, setTheme } = useTheme();
   const { lang, setLang } = useLang();
 
-  const { setGameStatus, gameStatus } = useBlackjack();
-
   return (
     <>
-      <BlackjackButton
+      {/* <BlackjackButton
         className={cn("absolute top-5 left-5", {
           "hidden": gameStatus === "BALANCE_START"
         })}
@@ -24,7 +20,7 @@ export const BlackjackButtons = (): ReactElement => {
       >
         <ArrowLeft size={16} className="mr-1" />
         {lang === "fr" ? "Retour au menu" : "Back to menu"}
-      </BlackjackButton>
+      </BlackjackButton> */}
 
       <div className="flex flex-col sm:flex-row gap-1 absolute top-5 right-5">
         <BlackjackButton className="justify-center bg-white bg-opacity-10 text-white rounded-md px-3 py-2 flex items-center" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
@@ -33,10 +29,18 @@ export const BlackjackButtons = (): ReactElement => {
           <span className="sr-only">Toggle theme</span>
         </BlackjackButton>
 
-        <BlackjackButton className="justify-center bg-white bg-opacity-10 text-white rounded-md px-3 py-2" onClick={() => setLang(lang === "fr" ? "en" : "fr")}>
-          {lang === "fr" ? "🇺🇸" : "🇫🇷"}
-        </BlackjackButton>
+        <SwitchLang />
       </div>
     </>
+  )
+}
+
+export const SwitchLang = (): ReactElement => {
+  const { lang, setLang } = useLang();
+
+  return (
+    <BlackjackButton className="justify-center bg-white bg-opacity-10 text-white rounded-md px-3 py-2" onClick={() => setLang(lang === "fr" ? "en" : "fr")}>
+      {lang === "fr" ? "🇺🇸" : "🇫🇷"}
+    </BlackjackButton>
   )
 }
