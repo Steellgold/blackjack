@@ -1,14 +1,15 @@
 "use client";
 
-import { Component } from "@/lib/components/utils/component";
 import { cn } from "@/lib/utils";
-import React, { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
+import type { Component } from "../../utils/component";
+import type { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 
 type BlackjackButtonProps = DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   size?: "default" | "icon" | "small";
+  variant?: "default" | "destructive" | "success";
 }
 
-export const BlackjackButton: Component<BlackjackButtonProps> = ({ children, className, size = "default", ...props }) => {
+export const BlackjackButton: Component<BlackjackButtonProps> = ({ children, className, size = "default", variant = "default", ...props }) => {
   return (
     <button className={cn(
       "bg-white bg-opacity-10 text-white rounded-md flex flex-row items-center group border border-white border-opacity-20",
@@ -18,8 +19,12 @@ export const BlackjackButton: Component<BlackjackButtonProps> = ({ children, cla
       "disabled:bg-opacity-10 disabled:border-opacity-20 disabled:text-opacity-50 disabled:cursor-not-allowed",
       className, {
         "px-3 py-1": size === "default",
-        "px-2 py-1": size === "small",
-        "px-0.5 py-0.5": size === "icon"
+        "px-2 py-1 text-sm": size === "small",
+        "px-0.5 py-0.5": size === "icon",
+
+        "bg-red-500 border-red-500": variant === "destructive",
+        "bg-green-500 border-green-500": variant === "success",
+        "bg-opacity-30 border-opacity-40 hover:bg-opacity-40 hover:border-opacity-50": variant !== "default",
       }
     )} {...props}>
       {children}
