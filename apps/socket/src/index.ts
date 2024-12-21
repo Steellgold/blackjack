@@ -11,7 +11,6 @@ const io = new Server(httpServer, {
     origin: "*",
     methods: ["GET", "POST"]
   },
-  path: "/socke.io"
 });
 
 io.on("connection", (socket) => {

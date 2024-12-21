@@ -3,8 +3,9 @@ import { readdirSync } from "fs";
 import { join } from "path";
 
 export type EventResponse = {
-  tableId: string;
-  data: any;
+  success: boolean;
+  error?: string;
+  data?: unknown;
 }
 
 export type EventExecute<P = unknown> = (io: Server, socket: Socket, props: P, callback: (response: EventResponse) => void) => void;
