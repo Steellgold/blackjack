@@ -1,11 +1,11 @@
 "use client";
 
-import { ReactElement } from "react"
-import { BlackjackCard } from "./ui/blackjack-card"
-import { useBlackjack } from "../_lib/hook/use-blackjack";
-import { handValue } from "../_lib/blackjack.utils";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/lib/hooks/use-lang";
+import type { ReactElement } from "react";
+import { BlackjackCard } from "./ui/blackjack/blackjack-card";
+import { handValue } from "../blackjack.utils";
+import { useBlackjack } from "../hooks/use-blackjack";
 
 export const BlackjackChoice = (): ReactElement => {
   const { hit, stand, gameStatus, croupierCards, playerCards } = useBlackjack();

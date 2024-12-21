@@ -2,10 +2,10 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BlackjackChat } from "./_components/blackjack-chat";
+import { BlackjackChat } from "../../lib/components/ui/blackjack/blackjack-chat";
 import { RealtimeChannel } from "@supabase/supabase-js";
-import { supabase } from "@/lib/utils/db/supabase";
-import { useIdentity } from "../_lib/hook/use-identity";
+import { useIdentity } from "@/lib/hooks/use-identity";
+import { supabase } from "@blackjack/db/supabase";
 
 const Page = () => {
   const { gameId } = useParams();

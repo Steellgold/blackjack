@@ -2,9 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import { Club, Diamond, Heart, Spade } from "lucide-react";
-import { ReactElement } from "react";
-import { Card, Suit } from "../_lib/blackjack.types";
+import type { ReactElement } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import type { Card, Suit } from "../types/blackjack.types";
 
 const suitToIcon = (suit: Suit): ReactElement => {
   switch (suit) {

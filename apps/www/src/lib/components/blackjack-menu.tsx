@@ -1,12 +1,12 @@
 "use client";
 
-import { ReactElement } from "react";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { BlackjackButton } from "./ui/blackjack-button";
-import { useBlackjack } from "../_lib/hook/use-blackjack";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/lib/hooks/use-lang";
+import { useBlackjack } from "../hooks/use-blackjack";
+import type { ReactElement } from "react";
+import { BlackjackButton } from "./ui/blackjack/blackjack-button";
 
 export const BlackjackButtons = (): ReactElement => {
   const { theme, setTheme } = useTheme();

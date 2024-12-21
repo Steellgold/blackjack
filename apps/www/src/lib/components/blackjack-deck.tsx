@@ -1,10 +1,10 @@
 "use client";
 
 import { useLang } from "@/lib/hooks/use-lang";
-import { useBlackjack } from "../_lib/hook/use-blackjack";
 import { BlackjackCard } from "./blackjack-card";
-import { BlackjackCard as UIBlackjackCard } from "./ui/blackjack-card";
+import { BlackjackCard as UIBlackjackCard } from "./ui/blackjack/blackjack-card";
 import { useState } from "react";
+import { useBlackjack } from "../hooks/use-blackjack";
 
 export const BlackjackDeck = () => {
   const { deck } = useBlackjack();
@@ -36,10 +36,6 @@ export const BlackjackDeck = () => {
           </div>
         )}
       </div>
-
-      {/* <p className="absolute bottom-0 right-0 text-xs text-gray-400">
-        {deck.length} {lang === "fr" ? "cartes" : "cards"}
-      </p> */}
     </UIBlackjackCard>
   );
 }

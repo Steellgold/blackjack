@@ -1,14 +1,14 @@
 "use client";
 
-import { Component } from "@/lib/components/utils/component";
 import { cn } from "@/lib/utils";
-import { useBlackjack } from "../_lib/hook/use-blackjack";
 import { Undo } from "lucide-react";
-import { ChipValue } from "../_lib/blackjack.types";
-import { BlackjackCard } from "./ui/blackjack-card";
-import { BlackjackButton } from "./ui/blackjack-button";
 import { useState } from "react";
 import { useLang } from "@/lib/hooks/use-lang";
+import { useBlackjack } from "../hooks/use-blackjack";
+import { BlackjackCard } from "./ui/blackjack/blackjack-card";
+import { BlackjackButton } from "./ui/blackjack/blackjack-button";
+import type { ChipValue } from "../types/blackjack.types";
+import type { Component } from "./utils/component";
 
 export const BlackjackBet = () => {
   const { gameStatus, bets, removeBet, gameStartTimer } = useBlackjack();

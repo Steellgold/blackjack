@@ -1,4 +1,4 @@
-import { Card, Rank, Suit } from "./blackjack.types";
+import type { Card, Rank, Suit } from "./types/blackjack.types";
 
 export const createDeck = (): Card[] => {
   const suits: Suit[] = ["Hearts", "Diamonds", "Clubs", "Spades"];

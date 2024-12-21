@@ -1,12 +1,8 @@
 "use client";
 
-import { ReactElement } from "react";
 import { BlackjackCardsStack } from "./blackjack-card";
-import { useBlackjack } from "../_lib/hook/use-blackjack";
 import { BlackjackStarting } from "./blackjack-balance";
 import { BlackjackBet, BlackjackBets } from "./blackjack-bet";
-import { handValue } from "../_lib/blackjack.utils";
-import { BlackjackCard } from "./ui/blackjack-card";
 import { BlackjackChoice } from "./blackjack-choice";
 import { BlackjackDeck } from "./blackjack-deck";
 import { BlackjackResult } from "./blackjack-result";
@@ -14,6 +10,10 @@ import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 import { BlackjackButtons } from "./blackjack-menu";
 import { useLang } from "@/lib/hooks/use-lang";
+import type { ReactElement } from "react";
+import { useBlackjack } from "../hooks/use-blackjack";
+import { BlackjackCard } from "./ui/blackjack/blackjack-card";
+import { handValue } from "../blackjack.utils";
 
 export const BlackjackBoard = (): ReactElement => {
   const { gameStatus, croupierCards, playerCards, balance } = useBlackjack();

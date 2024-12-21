@@ -1,19 +1,18 @@
 "use client";
 
-import { ReactElement, useEffect, useState } from "react";
-import { useBlackjack } from "../_lib/hook/use-blackjack";
-import { BlackjackCard } from "./ui/blackjack-card";
-import { BlackjackButton } from "./ui/blackjack-button";
-import { createDeck } from "../_lib/blackjack.utils";
-import { BlackjackInput } from "./ui/blackjack-input";
+import { useEffect, useState, type ReactElement } from "react";
 import { BlackjackButtons } from "./blackjack-menu";
-import { supabase } from "@/lib/utils/db/supabase";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { generateName } from "just-random-names";
-import { useIdentity } from "../_lib/hook/use-identity";
-import { Separator } from "@/lib/components/ui/separator";
 import { useLang } from "@/lib/hooks/use-lang";
+import { useBlackjack } from "../hooks/use-blackjack";
+import { useIdentity } from "../hooks/use-identity";
+import { supabase } from "@blackjack/db/supabase";
+import { BlackjackCard } from "./ui/blackjack/blackjack-card";
+import { BlackjackButton } from "./ui/blackjack/blackjack-button";
+import { createDeck } from "../blackjack.utils";
+import { BlackjackInput } from "./ui/blackjack/blackjack-input";
 
 export const BlackjackStarting = (): ReactElement => {
   const { setBalance, setGameStatus, reset, setDeck, startGameTimer } = useBlackjack();
@@ -29,7 +28,7 @@ export const BlackjackStarting = (): ReactElement => {
       console.log("Nom généré:", newName);
       setName(newName);
     }
-  }, [hydrated, name]); // Dépendances mises à jour
+  }, [hydrated, name]);
 
   const [gameCode, setGameCode] = useState("");
 
