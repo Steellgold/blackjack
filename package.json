@@ -1,0 +1,10 @@
+{
+  "scripts": {
+      "dev": "pnpm --filter=./apps/* --recursive run dev",
+      "build": "pnpm --filter=./apps/* --recursive run build"
+  },
+  "engines": {
+      "node": ">=20.0.0",
+      "pnpm": ">=9.0.0"
+  }
+}
