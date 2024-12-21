@@ -1,5 +1,5 @@
 {
-  "name": "@steellgold/socket",
+  "name": "@blackjack/socket",
   "scripts": {
     "dev": "tsx ./src/index.ts --watch --noEmit"
   },
