@@ -1,0 +1,1 @@
+export const SEC_TO_BET = 3;
