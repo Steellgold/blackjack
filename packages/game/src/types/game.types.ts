@@ -2,71 +2,46 @@ import type { Card } from "./card.types";
 import type { Socket } from "socket.io-client";
 
 export type GameStatus = 
-  | "WAITING_FOR_PLAYERS"  // Waiting for more players
-  | "BALANCE_START"        // Initial state to set the balance
-  | "BETTING"              // Betting phase
-  | "PLAYING"              // The game is in progress
-  | "DEALER_TURN"          // Dealer's turn
-  | "PLAYER_BLACKJACK"     // A player has a blackjack
-  | "DEALER_BLACKJACK"     // The dealer has a blackjack
-  | "PLAYER_WIN"           // A player wins
-  | "DEALER_WIN"           // The dealer wins
-  | "PLAYER_BUST"          // A player has gone over 21
-  | "DEALER_BUST"          // The dealer has gone over 21
-  | "DOUBLE_BUST"          // Both the player and dealer went over 21
-  | "DRAW"                 // A tie between the player and dealer
-  | "GAME_OVER";           // The game is over and the winner is declared (Never used i think)
+  "WAITING_FOR_PLAYERS" | // Waiting for players to join - When OK: WAITING_FOR_BETS
+  "WAITING_FOR_BETS" | // Players can place bets - When OK: WAITING_FOR_PLAYER_CHOICES
+  "WAITING_FOR_PLAYER_CHOICES" | // Hit, Stand - When OK: WAITING_FOR_PLAYER_DEALER (if all players are done) dealer hits until 17
+  "WAITING_FOR_DEALER"; // Dealer is playing - When OK: WAITING_FOR_BETS
 
 export type PlayerStatus = 
-  | "WAITING"              // Waiting for the next round
-  | "BETTING"              // Placing a bet
-  | "PLAYING"              // Currently playing
-  | "STAND"                // Chose to stand
-  | "BUST";                // Exceeded 21
+  "BETTING" | // Player is placing a bet
+  "BETTED" | // Player has placed a bet
+  "WAITING" | // Player is playing
+  "STAND" | // Player has chosen to stand
+  "HIT" | // Player has chosen to hit
+  "BUST" | // Player has busted
+  "BLACKJACK"; // Player has blackjack
 
 export type Player = {
-  id: string;
-  name: string;
-  balance: number;
-  bet: number;
-  cards: Card[];
+  id: string; // Socket ID
+  name: string; // Player name
+
+  cards: Card[]; // Player's cards
+  bets: number[]; // Player's bets (in [] to be can cancel easily)
+
   status: PlayerStatus;
+  isTurn: boolean;
 };
 
 export type GameState = {
-  players: Map<string, Player>;
-  croupierCards: Card[];
-  deck: Card[];
-  gameStatus: GameStatus;
-  timer: number;
-  currentPlayerIndex: number;
-  timerId?: ReturnType<typeof setTimeout> | null;
+  socket: Socket | null; // Socket connection
+  tableId: string | null; // Table ID
+
+  players: Player[]; // Players in the game
+  dealerCards: Card[]; // 1 card hidden & 1 card visible
+
+  gameStatus: GameStatus; // Current game status
 };
 
-export type BlackjackState = {
-  socket: Socket | null;
-  gameId: string | null;
-  players: Map<string, Player>;
-  currentPlayerId: string | null;
-  
-  // gameStatus: GameStatus;
-  // gameStartTimer: number;
-  
-  // croupierCards: Card[];
-  // deck: Card[];
+export type BlackjackState = GameState & {
+  setGameStatus: (status: GameStatus) => void; // Set game status
 
-  // --- Socket actions ---
-  initializeSocket: (gameId: string, playerName: string) => void;
-  disconnectSocket: () => void;
-  
-  // --- Game actions ---
-  // placeBet: (amount: number) => void;
-  // hit: () => void;
-  // stand: () => void;
-  
-  // --- Socket events ---
-  // setGameStatus: (status: GameStatus) => void;
-  // setGameStartTimer: (timer: number) => void;
-  // updatePlayer: (playerId: string, playerData: Partial<Player>) => void;
-  // setCroupierCards: (cards: Card[]) => void;
+  initializeSocket: (tableId: string, playerName: string, playerId: string) => void; // Initialize socket connection
+  disconnectSocket: () => void; // Disconnect socket connection
+
+  createTable: (playerName: string, playerId: string) => Promise<string>; // Create a new table
 };

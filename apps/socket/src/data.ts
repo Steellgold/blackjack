@@ -1,3 +1,3 @@
 import type { GameState } from "@blackjack/game/types";
 
-export const games = new Map<string, GameState>();
+export const tables = new Map<string, GameState>();
