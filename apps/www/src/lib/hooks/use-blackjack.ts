@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { io } from "socket.io-client";
 import type { BettingTimerTickResponse, BlackjackState, EventResponse, GameState, GameStatus, TableDataCreatedResponse, TablePlayersUpdateResponse } from "@blackjack/game/types";
+import { toast } from "sonner";
 
 export const useBlackjack = create<BlackjackState>((set, get) => ({
   socket: null,
@@ -18,7 +19,7 @@ export const useBlackjack = create<BlackjackState>((set, get) => ({
     set({ gameStatus: status });
   },
 
-  initializeSocket: (tableId: string, playerName: string) => {
+  initializeSocket: (tableId: string, playerName: string, autoJoin: boolean = false) => {
     const { socket: existingSocket } = get();
 
     if (existingSocket) {
@@ -33,10 +34,17 @@ export const useBlackjack = create<BlackjackState>((set, get) => ({
     socket.on("connect", () => {
       console.log("Socket connected");
       set({ socket, tableId });
-      
-      socket.emit("join-table", { tableId, playerName, playerId: socket.id }, (response: any) => {
-        console.log("Join table response:", response);
-      });
+
+      if (autoJoin) {
+        socket.emit("join-table", { tableId, playerName, playerId: socket.id }, (response: EventResponse) => {
+          if (!response.success) {
+            console.error("Failed to join table:", response.error);
+            toast.error(response.error);
+          }
+  
+          console.log("Join table response:", response);
+        });
+      }
     });
 
     // socket.on("disconnect", () => {
@@ -70,6 +78,26 @@ export const useBlackjack = create<BlackjackState>((set, get) => ({
     });
       
     set({ socket });
+  },
+
+  canJoinTable: (tableId: string) => {
+    const { socket } = get();
+    if (socket) {
+      socket.emit("can-join", { tableId, playerId: socket.id }, (response: EventResponse) => {
+        if (!response.success) {
+          console.error("Failed to join table:", response.error);
+          toast.error(response.error);
+          return {
+            success: false,
+            error: response.error
+          };
+        }
+
+        return { success: true };
+      });
+    }
+
+    return { success: false, error: "Socket not connected" };
   },
 
   disconnectSocket: () => {

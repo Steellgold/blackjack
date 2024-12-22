@@ -1,17 +1,17 @@
 import type { Server, Socket } from "socket.io";
 import type { EventExecute } from "../manager/event.manager";
 import { tables } from "../data";
+import type { EventResponse } from "@blackjack/game/types";
 
 type JoinTableProps = {
   tableId: string;
   playerName: string;
-  playerId: string;
 }
 
 export const name = "join-table";
 
 export const execute: EventExecute<JoinTableProps> = async (io: Server, socket: Socket, data, callback) => {
-  const { tableId, playerName, playerId } = data;
+  const { tableId, playerName } = data;
   
   let table = tables.get(tableId);
   
@@ -28,17 +28,18 @@ export const execute: EventExecute<JoinTableProps> = async (io: Server, socket: 
   }
 
   table = tables.get(tableId);
+  if (!table) return callback({ success: false, error: "Table not found" });
+  
+  io.emit("can-join", { tableId, playerId: socket.id }, (response: EventResponse) => {
+    if (!response.success) {
+      return callback({ success: false, error: response.error });
+    }
 
-  if (!table) {
-    return callback({ success: false, error: "Table not found" });
-  }
-
-  if (table.players.find(player => player.id === playerId)) {
-    return callback({ success: false, error: "Player already joined" });
-  }
+    console.log("Player can join table:", response);
+  });
 
   table.players.push({
-    id: playerId,
+    id: socket.id,
     name: playerName,
     cards: [],
     bets: [],

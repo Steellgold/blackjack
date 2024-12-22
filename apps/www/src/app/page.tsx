@@ -18,7 +18,7 @@ import { useBlackjack } from "@/lib/hooks/use-blackjack";
 const Page = () => {
   const { lang } = useLang();
   const { playerName, setPlayerName } = usePlayerStore();
-  const { createTable, initializeSocket } = useBlackjack();
+  const { createTable, initializeSocket, canJoinTable } = useBlackjack();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [canCloseDialog, setCanCloseDialog] = useState(true);
@@ -67,7 +67,14 @@ const Page = () => {
     }
 
     try {
-      await initializeSocket(tableCode.trim(), playerName);
+      initializeSocket(tableCode.trim(), playerName, false);
+
+      const joinTable = canJoinTable(tableCode.trim());
+      if (!joinTable.success) {
+        toast.error(joinTable.error);
+        return;
+      }
+
       toast.success(lang === "fr" ? "Table rejointe avec succès" : "Table joined successfully");
       window.location.href = `/${tableCode.trim()}`;
     } catch (error) {

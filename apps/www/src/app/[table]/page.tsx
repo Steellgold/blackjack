@@ -21,7 +21,7 @@ const TablePage = () => {
       return;
     }
     
-    initializeSocket(table, playerName);
+    initializeSocket(table, playerName, true);
   }, [playerName]);
 
   return (
