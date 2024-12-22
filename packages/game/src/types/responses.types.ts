@@ -8,6 +8,10 @@ export type TablePlayersUpdateResponse = {
   players: Player[];
 };
 
+export type BettingTimerTickResponse = {
+  timeLeft: number;
+};
+
 export type EventResponse<R = unknown> = {
   success: boolean;
   error?: string;
