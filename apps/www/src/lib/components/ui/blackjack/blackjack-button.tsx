@@ -12,7 +12,7 @@ type BlackjackButtonProps = DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonEle
 export const BlackjackButton: Component<BlackjackButtonProps> = ({ children, className, size = "default", variant = "default", ...props }) => {
   return (
     <button className={cn(
-      "bg-white bg-opacity-10 text-white rounded-md flex flex-row items-center group border border-white border-opacity-20",
+      "bg-white bg-opacity-10 text-white rounded-md flex flex-row items-center justify-center group border border-white border-opacity-20",
       "hover:bg-opacity-30 hover:border-opacity-40",
       "transition-colors duration-300 ease-in-out",
 

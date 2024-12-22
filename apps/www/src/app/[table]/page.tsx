@@ -7,13 +7,15 @@ import { useParams } from "next/navigation";
 const TablePage = () => {
   const { table } = useParams();
   const {
-    players
+    players,
+    gameStatus
   } = useBlackjack();
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
       <div className="mb-4">
         <h1 className="text-2xl">Table: {table}</h1>
+        <p>Game Status: {gameStatus}</p>
       </div>
 
       <div className="flex flex-row gap-2">

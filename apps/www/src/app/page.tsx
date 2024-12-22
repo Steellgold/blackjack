@@ -10,38 +10,27 @@ import { usePlayerStore } from "@/lib/hooks/store/use-player.store";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/lib/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { RefreshCcw } from "lucide-react";
-import { generateName } from "just-random-names";
-import { SwitchLang } from "@/lib/components/blackjack-menu";
 import { useBlackjack } from "@/lib/hooks/use-blackjack";
 import { useRouter } from "next/navigation";
+import { Slider } from "@/lib/components/ui/slider";
 
 const Page = () => {
   const { lang } = useLang();
-  const { playerName, setPlayerName } = usePlayerStore();
+  const { playerName } = usePlayerStore();
   const { createTable, joinTable, canJoinTable } = useBlackjack();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [canCloseDialog, setCanCloseDialog] = useState(true);
-  const [newName, setNewName] = useState(playerName);
   const [tableCode, setTableCode] = useState("");
 
-  const router = useRouter();
+  const [expectedPlayers, setExpectedPlayers] = useState<number>(2);
+  const [balance, setBalance] = useState<string>("1000");
 
-  useEffect(() => {
-    if (playerName === "") {
-      setIsDialogOpen(true);
-      setCanCloseDialog(false);
-    }
-  }, [playerName]);
+  const router = useRouter();
 
   const avatar = createAvatar(dylan, { seed: playerName || "Joueur" }).toDataUri();
 
   const handleTable = async(type: "create" | "join") => {
     if (playerName === "") {
       toast.error(lang === "fr" ? "Vous devez entrer un nom pour continuer." : "You must enter a name to continue.");
-      setIsDialogOpen(true);
-      setCanCloseDialog(false);
       return;
     }
 
@@ -117,109 +106,70 @@ const Page = () => {
           </span>
         </div>
 
-        <BlackjackButton size="small" onClick={() => handleTable("create")}>
-          <>{lang === "fr" ? "Créer" : "Create"}</>
-        </BlackjackButton>
-      </BlackjackCard>
-
-      <BlackjackCard className="flex flex-row gap-3 items-center p-3 w-full">
-        <BlackjackCard className="bg-opacity-5 border-opacity-10 p-2 flex flex-row gap-2 items-center">
-          <img src={avatar} alt="Avatar" className="rounded-md w-14 h-14" />
-          
-          <div className="flex flex-col gap-1">
-            <h1 className="text-lg font-semibold">
-              {playerName == "" ? "Joueur" : playerName}
-            </h1>
-            <span className="text-xs">$1000</span>
-          </div>
-        </BlackjackCard>
-
-        <Dialog
-          open={isDialogOpen}
-          onOpenChange={
-            (isOpen) => {
-              if (!canCloseDialog && !isOpen) {
-                toast.error("Vous devez entrer un nom pour continuer.");
-              } else {
-                setIsDialogOpen(isOpen);
-              }
-            }
-          }
-        >
+        <Dialog>
           <DialogTrigger asChild>
-            <BlackjackButton>
-              {lang === "fr" ? "Modifier le nom" : "Edit name"}
+            <BlackjackButton size="small">
+              {lang === "fr" ? "Créer" : "Create"}
             </BlackjackButton>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {canCloseDialog && (
-                  <>
-                    {lang === "fr" ? "Modifier le nom" : "Edit name"}
-                  </>
-                ) || (
-                  <>
-                    {lang === "fr" ? "Bienvenue" : "Welcome"} !
-                  </>
-                )}
+                {lang === "fr" ? "Quel est le nombre de joueurs ?" : "How many players ?"}
               </DialogTitle>
 
               <DialogDescription>
-                {canCloseDialog && (
-                  <>
-                    {lang === "fr" ? "Entrez votre nom et cliquer sur le bouton pour le sauvegarder." : "Enter your name and click the button to save it."}
-                  </>
-                ) || (
-                  <>
-                    {lang === "fr" ? "Avant de pouvoir continuer, veuillez entrer votre nom ou simplement un pseudonyme. Vous pouvez aussi en générer un aléatoirement." : "Before you can continue, please enter your name or simply a nickname. You can also generate one randomly."}
-                  </>
-                )}
+                {lang === "fr"
+                  ? "Entrez le nombre de joueurs qui peuvent rejoindre la partie. Vous pouvez aussi choisir un mot de passe pour protéger la partie ainsi que la balance de départ pour chaque joueur."
+                  : "Enter the number of players who can join the game. You can also choose a password to protect the game as well as the starting balance for each player."
+                }
               </DialogDescription>
             </DialogHeader>
 
-            <BlackjackCard className="flex flex-row gap-3 items-center p-3 mt-3">
-              <img
-                src={createAvatar(dylan, { seed: newName }).toDataUri()}
-                alt="Avatar"
-                className="rounded-md h-11"
-              />
+            <BlackjackCard className="flex flex-col sm:flex-row sm:gap-3 items-center p-3 mt-3">
+              <div className="w-full flex flex-col mb-2 sm:mb-0">
+                <label className="block text-white text-sm font-medium sm:mb-2 sm:-mt-4">
+                  {expectedPlayers} {lang === "fr" ? "joueurs attendus" : "expected players"}
+                </label>
+
+                <Slider
+                  value={[expectedPlayers]}
+                  onValueChange={(value: number[]) => setExpectedPlayers(value[0] || 2)}
+                  min={2}
+                  max={7}
+                  step={1}
+                  className="w-full"
+                />
+              </div>
 
               <BlackjackInput
+                inputSize="small"
+                placeholder="1000"
+                label={lang === "fr" ? "Balance de départ" : "Starting balance"}
+                value={balance}
+                onChange={(e) => setBalance(e.target.value)}
                 className="w-full"
-                placeholder={lang === "fr" ? "Nom" : "Name"}
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
               />
+
+              {/* <BlackjackInput
+                inputSize="small"
+                placeholder={lang === "fr" ? "Mot de passe" : "Password"}
+                label={lang === "fr" ? "Mot de passe" : "Password"}
+                className="w-full"
+              /> */}
             </BlackjackCard>
 
-            <DialogFooter className="flex flex-col sm:flex-row justify-between w-full mt-3 gap-2">
-              <div className="flex gap-2">
-                <SwitchLang />
-
-                <BlackjackButton
-                  onClick={() => setNewName(generateName(lang == "fr" ? "fr" : "en", 2, ["lifestyle", "adjectives"]))}
-                  className="flex flex-row gap-1.5 items-center"
-                >
-                  <RefreshCcw className="h-4 w-4" />
-                  {lang === "fr" ? "Nom aléatoire" : "Random name"}
-                </BlackjackButton>
-              </div>
-
-              <div className="flex gap-2">
-                <BlackjackButton onClick={() => setNewName("")}>
-                  {lang === "fr" ? "Annuler" : "Cancel"}
-                </BlackjackButton>
-
-                <BlackjackButton variant="success" onClick={() => {
-                  setPlayerName(newName);
-                  setNewName("");
-                  toast.info("Nom sauvegardé avec succès.");
-                  setIsDialogOpen(false);
-                }}>
-                  {lang === "fr" ? "Sauvegarder" : "Save"}
-                </BlackjackButton>
-              </div>
+            <DialogFooter className="flex flex-col sm:flex-row justify-end w-full mt-3 gap-2">
+              <BlackjackButton
+                variant="success"
+                onClick={() => handleTable("create")}
+                disabled={
+                  expectedPlayers <= 1 || expectedPlayers > 7 ||
+                  balance === ""
+                }
+              >
+                {lang === "fr" ? "Créer la table" : "Create table"}
+              </BlackjackButton>
             </DialogFooter>
           </DialogContent>
         </Dialog>

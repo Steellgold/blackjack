@@ -29,6 +29,10 @@ export type Player = {
 };
 
 export type GameState = {
+  isSolo: boolean;
+  expectedPlayers: number; // Expected number of players
+  baseBalance: number; // Base balance for each player
+
   tableId: string | null; // Table ID
 
   players: Player[]; // Players in the game

@@ -51,9 +51,9 @@ export const viewport: Viewport = {
 const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
-      <body className={`rounded-lg ${monterserrat.className} antialiased bg-background dark:bg-[#121212]`}>        
+      <body className={`rounded-lg ${monterserrat.className} antialiased`}>        
         <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
-          <div className="flex items-center justify-center h-screen w-screen bg-green-900 relative text-white">
+          <div className="flex items-center justify-center h-screen w-screen bg-green-900 dark:bg-green-950 relative text-white">
             <BlackjackButtons />
             
             <Toaster richColors />

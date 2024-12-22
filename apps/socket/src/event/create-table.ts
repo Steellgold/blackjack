@@ -4,7 +4,13 @@ import { tables } from "../data";
 
 export const name = "create-table";
 
-export const execute: EventExecute = async (io: Server, socket: Socket, data, callback) => {
+type CreateTableData = {
+  expectedPlayers: number;
+  baseBalance: number;
+}
+
+export const execute: EventExecute<CreateTableData> = async (io: Server, socket: Socket, data, callback) => {
+  const { baseBalance, expectedPlayers } = data;
   const tableId = "abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVWYZ1234567890".split("").sort(() => 0.5 - Math.random()).slice(0, 4).join("");
 
   tables.set(tableId, {
@@ -13,7 +19,12 @@ export const execute: EventExecute = async (io: Server, socket: Socket, data, ca
     bettingTimer: 0,
     cards: [],
     deck: [],
-    tableId
+    tableId,
+    expectedPlayers,
+    baseBalance,
+
+
+    isSolo: false // TODO.
   })
 
   socket.join(tableId);

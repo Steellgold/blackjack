@@ -21,6 +21,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
 
   const [tableId, setTableId] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
+  const [expectedPlayers, setExpectedPlayers] = useState<number>(0);
   
   const [cards, setCards] = useState<Card[]>([]); // Dealer's cards
   const [deck, setDeck] = useState<Card[]>([]); // Deck of cards
@@ -122,6 +123,9 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
   };
 
   const value: BlackjackState = {
+    isSolo: false, // TODO: Implement single player mode (Just auto-launch the process when the player joins)
+    expectedPlayers,
+
     canJoinTable,
 
     createTable,
