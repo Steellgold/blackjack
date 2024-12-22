@@ -40,8 +40,16 @@ export type GameState = {
 export type BlackjackState = GameState & {
   setGameStatus: (status: GameStatus) => void; // Set game status
 
-  initializeSocket: (tableId: string, playerName: string, playerId: string) => void; // Initialize socket connection
+  initializeSocket: (tableId: string, playerName: string) => void; // Initialize socket connection
   disconnectSocket: () => void; // Disconnect socket connection
 
-  createTable: (playerName: string, playerId: string) => Promise<string>; // Create a new table
+  createTable: (playerName: string) => Promise<string>; // Create a new table
+
+  addBet: (bet: number) => void; // Add a bet
+  removeBet: () => void; // Remove the last bet
+
+  hit: () => void; // Player hits
+  stand: () => void; // Player stands
+
+  startGame: () => void; // Start the game (switch to WAITING_FOR_BETS)
 };

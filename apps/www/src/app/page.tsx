@@ -14,11 +14,10 @@ import { RefreshCcw } from "lucide-react";
 import { generateName } from "just-random-names";
 import { SwitchLang } from "@/lib/components/blackjack-menu";
 import { useBlackjack } from "@/lib/hooks/use-blackjack";
-import { nanoid } from "nanoid";
 
 const Page = () => {
   const { lang } = useLang();
-  const { playerName, id, setPlayerName, setId } = usePlayerStore();
+  const { playerName, setPlayerName } = usePlayerStore();
   const { createTable, initializeSocket } = useBlackjack();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -44,7 +43,7 @@ const Page = () => {
     }
 
     try {
-      const tableId = await createTable(playerName, id);
+      const tableId = await createTable(playerName);
       if (tableId) {
         toast.success(lang === "fr" ? "Table créée avec succès" : "Table created successfully");
         // window.location.href = `/${tableId}`;
@@ -68,7 +67,7 @@ const Page = () => {
     }
 
     try {
-      await initializeSocket(tableCode.trim(), playerName, id);
+      await initializeSocket(tableCode.trim(), playerName);
       toast.success(lang === "fr" ? "Table rejointe avec succès" : "Table joined successfully");
       window.location.href = `/${tableCode.trim()}`;
     } catch (error) {
@@ -227,7 +226,6 @@ const Page = () => {
 
                 <BlackjackButton variant="success" onClick={() => {
                   setPlayerName(newName);
-                  setId(nanoid());
                   setNewName("");
                   toast.info("Nom sauvegardé avec succès.");
                   setIsDialogOpen(false);
