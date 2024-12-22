@@ -4,10 +4,8 @@ import { BlackjackButton } from "@/lib/components/ui/blackjack/blackjack-button"
 import { BlackjackCard } from "@/lib/components/ui/blackjack/blackjack-card";
 import { BlackjackInput } from "@/lib/components/ui/blackjack/blackjack-input";
 import { useLang } from "@/lib/hooks/use-lang";
-
 import { createAvatar } from '@dicebear/core';
 import { dylan } from "@dicebear/collection";
-import { useBlackjack } from "@/lib/hooks/use-blackjack";
 import { usePlayerStore } from "@/lib/hooks/store/use-player.store";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/lib/components/ui/dialog";
 import { useEffect, useState } from "react";
@@ -15,14 +13,18 @@ import { toast } from "sonner";
 import { RefreshCcw } from "lucide-react";
 import { generateName } from "just-random-names";
 import { SwitchLang } from "@/lib/components/blackjack-menu";
+import { useBlackjack } from "@/lib/hooks/use-blackjack";
+import { nanoid } from "nanoid";
 
 const Page = () => {
   const { lang } = useLang();
-  const { playerName, setPlayerName } = usePlayerStore();
+  const { playerName, id, setPlayerName, setId } = usePlayerStore();
+  const { createTable, initializeSocket } = useBlackjack();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [canCloseDialog, setCanCloseDialog] = useState(true);
   const [newName, setNewName] = useState(playerName);
+  const [tableCode, setTableCode] = useState("");
 
   useEffect(() => {
     if (playerName === "") {
@@ -33,8 +35,49 @@ const Page = () => {
 
   const avatar = createAvatar(dylan, { seed: playerName || "Joueur" }).toDataUri();
 
+  const handleCreateTable = async() => {
+    if (playerName === "") {
+      toast.error(lang === "fr" ? "Vous devez entrer un nom pour continuer." : "You must enter a name to continue.");
+      setIsDialogOpen(true);
+      setCanCloseDialog(false);
+      return;
+    }
+
+    try {
+      const tableId = await createTable(playerName, id);
+      if (tableId) {
+        toast.success(lang === "fr" ? "Table créée avec succès" : "Table created successfully");
+        // window.location.href = `/${tableId}`;
+      }
+    } catch (error) {
+      toast.error(lang === "fr" ? "Une erreur est survenue lors de la création de la table." : "An error occurred while creating the table.");
+    }
+  }
+
+  const handleJoinTable = async () => {
+    if (playerName === "") {
+      toast.error(lang === "fr" ? "Vous devez entrer un nom pour continuer." : "You must enter a name to continue.");
+      setIsDialogOpen(true);
+      setCanCloseDialog(false);
+      return;
+    }
+
+    if (!tableCode.trim()) {
+      toast.error(lang === "fr" ? "Veuillez entrer un code de table." : "Please enter a table code.");
+      return;
+    }
+
+    try {
+      await initializeSocket(tableCode.trim(), playerName, id);
+      toast.success(lang === "fr" ? "Table rejointe avec succès" : "Table joined successfully");
+      window.location.href = `/${tableCode.trim()}`;
+    } catch (error) {
+      toast.error(lang === "fr" ? "Table introuvable." : "Table not found.");
+    }
+  }
+
   return (
-    <div className="flex flex-col items-center gap-3 max-w-xl mx-auto w-full p-3">
+    <div className="flex flex-col items-center gap-1.5 max-w-xl mx-auto w-full p-3">
       <BlackjackCard className="flex flex-col items-center gap-3">
         <div className="flex flex-col items-center">
           <h1 className="text-xl font-extrabold">Blackjack</h1>
@@ -60,12 +103,18 @@ const Page = () => {
             {lang === "fr"
               ? "Demandez le code de la partie à un ami pour le rejoindre sur la même table."
               : "Ask your friend for the game code to join them on the same table."}
-            </span>
+          </span>
         </div>
 
         <div className="flex items-center sm:justify-end gap-1">
-          <BlackjackInput className="w-full sm:w-32" inputSize="small" placeholder={lang === "fr" ? "Code de table" : "Table code"} />
-          <BlackjackButton size="small">
+          <BlackjackInput 
+            className="w-full sm:w-32" 
+            inputSize="small" 
+            value={tableCode}
+            onChange={(e) => setTableCode(e.target.value)}
+            placeholder={lang === "fr" ? "Code de table" : "Table code"} 
+          />
+          <BlackjackButton size="small" onClick={handleJoinTable}>
             {lang === "fr" ? "Rejoindre" : "Join"}
           </BlackjackButton>
         </div>
@@ -82,7 +131,7 @@ const Page = () => {
           </span>
         </div>
 
-        <BlackjackButton size="small">
+        <BlackjackButton size="small" onClick={handleCreateTable}>
           <>{lang === "fr" ? "Créer" : "Create"}</>
         </BlackjackButton>
       </BlackjackCard>
@@ -178,6 +227,7 @@ const Page = () => {
 
                 <BlackjackButton variant="success" onClick={() => {
                   setPlayerName(newName);
+                  setId(nanoid());
                   setNewName("");
                   toast.info("Nom sauvegardé avec succès.");
                   setIsDialogOpen(false);
@@ -188,13 +238,6 @@ const Page = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-
-        {/* <BlackjackCard className="bg-opacity-5 border-opacity-10 p-2 flex flex-row gap-2 items-center">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-lg font-semibold">Dernière partie</h1>
-            <span className="text-xs">+ $100</span>
-          </div>
-        </BlackjackCard> */}
       </BlackjackCard>
     </div>
   );
