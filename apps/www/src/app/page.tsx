@@ -46,7 +46,7 @@ const Page = () => {
       const tableId = await createTable(playerName);
       if (tableId) {
         toast.success(lang === "fr" ? "Table créée avec succès" : "Table created successfully");
-        // window.location.href = `/${tableId}`;
+        window.location.href = `/${tableId}`;
       }
     } catch (error) {
       toast.error(lang === "fr" ? "Une erreur est survenue lors de la création de la table." : "An error occurred while creating the table.");
