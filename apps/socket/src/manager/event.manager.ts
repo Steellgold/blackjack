@@ -1,14 +1,14 @@
 import type { Server, Socket } from "socket.io";
 import { readdirSync } from "fs";
 import { join } from "path";
+import type { EventResponse } from "@blackjack/game/types";
 
-export type EventResponse = {
-  success: boolean;
-  error?: string;
-  data?: unknown;
-}
-
-export type EventExecute<P = unknown> = (io: Server, socket: Socket, props: P, callback: (response: EventResponse) => void) => void;
+export type EventExecute<P = unknown, R = unknown> = (
+  io: Server, 
+  socket: Socket, 
+  props: P, 
+  callback: (response: EventResponse<R>) => void
+) => void;
 
 export const load = (io: Server, socket: Socket) => {
   const events = readdirSync(join(__dirname, "..", "event"));
@@ -25,7 +25,11 @@ export const load = (io: Server, socket: Socket) => {
       throw new Error(`Event ${event} does not have an execute function`);
     }
 
-    socket.on(name, (props: unknown, callback: (response: EventResponse) => void) => execute(io, socket, props, callback));
+    socket.on(name, (data, callback) => {
+      console.log(`📡 Event ${name} received`, data);
+      execute(io, socket, data, callback);      
+    });
+
     console.log(`🔌 Event ${name} loaded`);
   }
 }
