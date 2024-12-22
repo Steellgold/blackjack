@@ -10,6 +10,9 @@ export const execute: EventExecute<void> = async (io: Server, socket: Socket, _,
     
     if (playerIndex !== -1) {
       table.players.splice(playerIndex, 1);
+      if (table.players.length === 0) {
+        tables.delete(tableId);
+      }
       
       socket.leave(tableId);
       

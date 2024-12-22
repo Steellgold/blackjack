@@ -87,7 +87,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
   const joinTable = async (playerName: string, tableId: string) => {
     return new Promise<EventResponse<TableJoinedResponse>>((resolve, reject) => {
       if (!tableId) {
-        reject({ success: false, error: "Table ID is missing" });
+        resolve({ success: false, error: "Table ID is missing" });
         return;
       }
 
@@ -97,8 +97,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
           console.log("Table joined:", data.data.tableId);
           resolve(data);
         } else {
-          console.error("Failed to join table:", data);
-          reject(data);
+          resolve(data);
         }
       });
     });
@@ -107,16 +106,17 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
   const canJoinTable = (tableId: string) => {
     return new Promise<EventResponse<TableJoinableResponse>>((resolve, reject) => {
       if (!tableId) {
-        reject({ success: false, error: "Table ID is missing" });
+        resolve({ success: false, error: "Table ID is missing" });
         return;
       }
 
       socket?.emit("can-join-table", { tableId }, (data: EventResponse<TableJoinableResponse>) => {
-        if (data.success) {
-          resolve(data);
-        } else {
-          reject(data);
-        }
+        resolve(data);
+        // if (data.success) {
+        //   resolve(data);
+        // } else {
+        //   reject(data);
+        // }
       });
     });
   };
