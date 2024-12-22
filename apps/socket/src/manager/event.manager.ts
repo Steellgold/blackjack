@@ -27,7 +27,7 @@ export const load = (io: Server, socket: Socket) => {
 
     socket.on(name, (data, callback) => {
       console.log(`📡 Event ${name} received`, data);
-      execute(io, socket, data, callback);      
+      execute(io, socket, data, callback);
     });
 
     console.log(`🔌 Event ${name} loaded`);
