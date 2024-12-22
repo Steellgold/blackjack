@@ -21,7 +21,9 @@ export const execute: EventExecute<JoinTableProps> = async (io: Server, socket: 
       gameStatus: "WAITING_FOR_PLAYERS",
       players: [],
       socket: null,
-      tableId
+      tableId,
+      deck: [],
+      bettingTimer: 0
     });
   }
 
@@ -40,8 +42,7 @@ export const execute: EventExecute<JoinTableProps> = async (io: Server, socket: 
     name: playerName,
     cards: [],
     bets: [],
-    status: "WAITING",
-    isTurn: false
+    status: "WAITING"
   });
   
   socket.join(tableId);

@@ -31,6 +31,14 @@ export const execute: EventExecute<JoinTableProps> = async (io: Server, socket: 
     return;
   }
 
+  if (player.bets.length === 0) {
+    table.players.forEach((player) => {
+      if (player.id === socket.id) {
+        player.status = "BETTING";
+      }
+    });
+  }
+
   player.bets.pop();
   io.to(tableId).emit("table-data", table);
   return callback({ success: true });
