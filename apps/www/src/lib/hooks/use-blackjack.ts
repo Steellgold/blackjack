@@ -2,13 +2,16 @@
 
 import { create } from "zustand";
 import { io } from "socket.io-client";
-import type { BlackjackState, EventResponse, GameState, GameStatus, TableDataCreatedResponse, TablePlayersUpdateResponse } from "@blackjack/game/types";
+import type { BettingTimerTickResponse, BlackjackState, EventResponse, GameState, GameStatus, TableDataCreatedResponse, TablePlayersUpdateResponse } from "@blackjack/game/types";
 
 export const useBlackjack = create<BlackjackState>((set, get) => ({
   socket: null,
   tableId: null,
   players: [],
   dealerCards: [],
+  bettingTimer: 0,
+  
+  deck: [],
 
   gameStatus: "WAITING_FOR_PLAYERS",
   setGameStatus: (status: GameStatus) => {
@@ -36,22 +39,36 @@ export const useBlackjack = create<BlackjackState>((set, get) => ({
       });
     });
 
-    socket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+    // socket.on("disconnect", () => {
+    //   console.log("Socket disconnected");
+    // });
 
-    socket.on("table-data", (data: EventResponse<TableDataCreatedResponse>) => {
-      console.log("Table data received:", data);
-    });
+    // socket.on("table-data", (data: EventResponse<TableDataCreatedResponse>) => {
+    //   console.log("Table data received:", data);
+    // });
 
-    socket.on("players-update", (data: TablePlayersUpdateResponse) => {
-      console.log("Players update received:", data.players);
-      if (data.players) {
-        console.log("Setting players:", data.players);
-        set({ players: data.players });
+    socket.on("betting-timer", (data: EventResponse<BettingTimerTickResponse>) => {
+      console.log("Betting timer update:", data);
+      if (data.data?.timeLeft) {
+        set({ bettingTimer: data.data.timeLeft });
       }
     });
-    
+
+    socket.on("players-update", (data: EventResponse<TablePlayersUpdateResponse>) => {
+      console.log("Players update received:", data.data?.players);
+      if (data.data?.players) {
+        console.log("Setting players:", data.data.players);
+        set({ players: data.data.players });
+      }
+    });
+
+    socket.on("game-status-update", (data: EventResponse<{ gameStatus: GameStatus }>) => {
+      console.log("Game status update:", data);
+      if (data.data?.gameStatus) {
+        set({ gameStatus: data.data.gameStatus });
+      }
+    });
+      
     set({ socket });
   },
 
