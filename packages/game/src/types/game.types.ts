@@ -1,6 +1,5 @@
 import type { Card } from "./card.types";
-import type { Socket } from "socket.io-client";
-import type { EventResponse } from "./responses.types";
+import type { EventResponse, TableCreatedResponse, TableJoinableResponse, TableJoinedResponse } from "./responses.types";
 
 export type GameStatus = 
   "WAITING_FOR_PLAYERS" | // Waiting for players to join - When OK: WAITING_FOR_BETS
@@ -30,34 +29,23 @@ export type Player = {
 };
 
 export type GameState = {
-  socket: Socket | null; // Socket connection
   tableId: string | null; // Table ID
 
   players: Player[]; // Players in the game
-  dealerCards: Card[]; // 1 card hidden & 1 card visible
 
   gameStatus: GameStatus; // Current game status
 
+  cards: Card[]; // Dealer's cards
   deck: Card[]; // Deck of cards
 
   bettingTimer: number; // Betting timer
 };
 
 export type BlackjackState = GameState & {
+  canJoinTable: (tableId: string) => Promise<EventResponse<TableJoinableResponse>>; // Check if a player can join a table
+
+  createTable: () => Promise<EventResponse<TableCreatedResponse>>; // Create a new table
+  joinTable: (playerName: string, playerId: string) => Promise<EventResponse<TableJoinedResponse>>; // Join a table
+
   setGameStatus: (status: GameStatus) => void; // Set game status
-
-  initializeSocket: (tableId: string, playerName: string, autoJoin?: boolean) => void; // Initialize socket connection
-  disconnectSocket: () => void; // Disconnect socket connection
-
-  canJoinTable: (tableId: string) => EventResponse; // Check if player can join the table
-
-  createTable: (playerName: string) => Promise<string>; // Create a new table
-
-  addBet: (bet: number) => void; // Add a bet
-  removeBet: () => void; // Remove the last bet
-
-  hit: () => void; // Player hits
-  stand: () => void; // Player stands
-
-  startGame: () => void; // Start the game (switch to WAITING_FOR_BETS)
 };

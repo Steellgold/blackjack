@@ -2,6 +2,7 @@ import fastify from "fastify";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { load } from "./manager/event.manager";
+import { execute as leaveTableExecute } from "./event/leave-table";
 
 const app = fastify();
 const httpServer = createServer(app.server);
@@ -19,6 +20,16 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("👋 User disconnected");
+
+    try {
+      leaveTableExecute(io, socket, undefined, (response) => {
+        if (!response.success) {
+          console.log("Error during leave-table:", response.error);
+        }
+      });
+    } catch (error) {
+      console.error("Error handling disconnect:", error);
+    }
   });
 });
 

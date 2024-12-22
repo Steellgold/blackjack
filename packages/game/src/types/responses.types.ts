@@ -1,15 +1,13 @@
-import type { Player } from "./game.types";
-
-export type TableDataCreatedResponse = {
+export type TableCreatedResponse = {
   tableId: string;
 };
 
-export type TablePlayersUpdateResponse = {
-  players: Player[];
+export type TableJoinedResponse = {
+  tableId: string;
 };
 
-export type BettingTimerTickResponse = {
-  timeLeft: number;
+export type TableJoinableResponse = {
+  tableId: string;
 };
 
 export type EventResponse<R = unknown> = {

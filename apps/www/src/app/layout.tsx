@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { BlackjackButtons } from "@/lib/components/blackjack-menu";
 import type { PropsWithChildren } from "react";
 import type { Component } from "@/lib/components/utils/component";
+import { BlackjackProvider } from "@/lib/hooks/use-blackjack";
 
 const monterserrat = Montserrat({ subsets: ["latin"] });
 
@@ -56,8 +57,10 @@ const Layout: Component<PropsWithChildren> = ({ children }) => {
             <BlackjackButtons />
             
             <Toaster richColors />
-            
-            {children}
+
+            <BlackjackProvider>
+              {children}
+            </BlackjackProvider>
           </div>
         </ThemeProvider>
       </body>

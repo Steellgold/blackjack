@@ -14,16 +14,19 @@ import { RefreshCcw } from "lucide-react";
 import { generateName } from "just-random-names";
 import { SwitchLang } from "@/lib/components/blackjack-menu";
 import { useBlackjack } from "@/lib/hooks/use-blackjack";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const { lang } = useLang();
   const { playerName, setPlayerName } = usePlayerStore();
-  const { createTable, initializeSocket, canJoinTable } = useBlackjack();
+  const { createTable, joinTable, canJoinTable } = useBlackjack();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [canCloseDialog, setCanCloseDialog] = useState(true);
   const [newName, setNewName] = useState(playerName);
   const [tableCode, setTableCode] = useState("");
+
+  const router = useRouter();
 
   useEffect(() => {
     if (playerName === "") {
@@ -34,7 +37,7 @@ const Page = () => {
 
   const avatar = createAvatar(dylan, { seed: playerName || "Joueur" }).toDataUri();
 
-  const handleCreateTable = async() => {
+  const handleTable = async(type: "create" | "join") => {
     if (playerName === "") {
       toast.error(lang === "fr" ? "Vous devez entrer un nom pour continuer." : "You must enter a name to continue.");
       setIsDialogOpen(true);
@@ -42,43 +45,20 @@ const Page = () => {
       return;
     }
 
-    try {
-      const tableId = await createTable(playerName);
-      if (tableId) {
-        toast.success(lang === "fr" ? "Table créée avec succès" : "Table created successfully");
-        window.location.href = `/${tableId}`;
+    if (type === "create") {
+      const data = await createTable();
+      if (data.success && data.data?.tableId) {
+        joinTable(playerName, data.data.tableId);
+        router.push(`/${data.data.tableId}`);
+      };
+    } else {
+      const data = await canJoinTable(tableCode);
+      if (data.success && data.data) {
+        joinTable(playerName, data.data.tableId);
+        router.push(`/${data.data.tableId}`);
+      } else {
+        toast.error(data.error || "Une erreur s'est produite.");
       }
-    } catch (error) {
-      toast.error(lang === "fr" ? "Une erreur est survenue lors de la création de la table." : "An error occurred while creating the table.");
-    }
-  }
-
-  const handleJoinTable = async () => {
-    if (playerName === "") {
-      toast.error(lang === "fr" ? "Vous devez entrer un nom pour continuer." : "You must enter a name to continue.");
-      setIsDialogOpen(true);
-      setCanCloseDialog(false);
-      return;
-    }
-
-    if (!tableCode.trim()) {
-      toast.error(lang === "fr" ? "Veuillez entrer un code de table." : "Please enter a table code.");
-      return;
-    }
-
-    try {
-      initializeSocket(tableCode.trim(), playerName, false);
-
-      const joinTable = canJoinTable(tableCode.trim());
-      if (!joinTable.success) {
-        toast.error(joinTable.error);
-        return;
-      }
-
-      toast.success(lang === "fr" ? "Table rejointe avec succès" : "Table joined successfully");
-      window.location.href = `/${tableCode.trim()}`;
-    } catch (error) {
-      toast.error(lang === "fr" ? "Table introuvable." : "Table not found.");
     }
   }
 
@@ -120,7 +100,7 @@ const Page = () => {
             onChange={(e) => setTableCode(e.target.value)}
             placeholder={lang === "fr" ? "Code de table" : "Table code"} 
           />
-          <BlackjackButton size="small" onClick={handleJoinTable}>
+          <BlackjackButton size="small" onClick={() => handleTable("join")}>
             {lang === "fr" ? "Rejoindre" : "Join"}
           </BlackjackButton>
         </div>
@@ -137,7 +117,7 @@ const Page = () => {
           </span>
         </div>
 
-        <BlackjackButton size="small" onClick={handleCreateTable}>
+        <BlackjackButton size="small" onClick={() => handleTable("create")}>
           <>{lang === "fr" ? "Créer" : "Create"}</>
         </BlackjackButton>
       </BlackjackCard>

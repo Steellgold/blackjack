@@ -2,16 +2,15 @@ import type { Server, Socket } from "socket.io";
 import type { EventExecute } from "../manager/event.manager";
 import { MAX_PLAYERS, tables } from "../data";
 
-export const name = "join-table";
+export const name = "can-join-table";
 
 type JoinTableData = {
-  playerName: string;
   tableId: string;
 };
 
 export const execute: EventExecute<JoinTableData> = async (io: Server, socket: Socket, data, callback) => {
-  const { playerName, tableId } = data;
-  if (!playerName || !tableId) {
+  const { tableId } = data;
+  if (!tableId) {
     return callback({ success: false, error: "Invalid data" });
   }
 
@@ -24,21 +23,14 @@ export const execute: EventExecute<JoinTableData> = async (io: Server, socket: S
     return callback({ success: false, error: "Table is full" });
   }
 
-  table.players.push({
-    id: socket.id,
-    name: playerName,
-    cards: [],
-    bets: [],
-    status: "WAITING"
-  });
-
-  socket.join(tableId);
-  io.to(tableId).emit("players-update", table.players);
+  if (table.gameStatus !== "WAITING_FOR_PLAYERS") {
+    return callback({ success: false, error: "Game has already started" });
+  }
 
   return callback({ 
     success: true,
     data: {
       tableId
-    } 
+    }
   });
 };
