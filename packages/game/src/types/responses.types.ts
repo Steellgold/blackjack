@@ -1,9 +1,12 @@
+import type { GameState } from "./game.types";
+
 export type TableCreatedResponse = {
   tableId: string;
 };
 
 export type TableJoinedResponse = {
   tableId: string;
+  state: GameState;
 };
 
 export type TableJoinableResponse = {

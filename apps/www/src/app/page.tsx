@@ -22,7 +22,7 @@ const Page = () => {
   const [tableCode, setTableCode] = useState("");
 
   const [expectedPlayers, setExpectedPlayers] = useState<number>(2);
-  const [balance, setBalance] = useState<string>("1000");
+  const [balance, setBalance] = useState<string>("100");
 
   const router = useRouter();
 
@@ -147,7 +147,7 @@ const Page = () => {
 
               <BlackjackInput
                 inputSize="small"
-                placeholder="1000"
+                placeholder="100"
                 label={lang === "fr" ? "Balance de départ" : "Starting balance"}
                 value={balance}
                 onChange={(e) => setBalance(e.target.value)}

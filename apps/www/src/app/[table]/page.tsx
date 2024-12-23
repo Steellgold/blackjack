@@ -29,9 +29,9 @@ const TablePage = () => {
             <h1 className="text-lg">{lang === "fr" ? "En attente de joueurs" : "Waiting for players"}</h1>
             <span className="text-xs">
               {lang === "fr" ? (
-                <>En attente de <BlackjackBadge>{players.length - expectedPlayers}</BlackjackBadge> joueurs pour commencer la partie, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
+                <>En attente de <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> joueurs pour commencer la partie, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
               ) : (
-                <>Waiting for <BlackjackBadge>{players.length - expectedPlayers}</BlackjackBadge> players to start the game, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
+                <>Waiting for <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> players to start the game, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
               )}
             </span>
           </div>

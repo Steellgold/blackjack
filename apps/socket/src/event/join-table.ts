@@ -38,7 +38,8 @@ export const execute: EventExecute<JoinTableData> = async (io: Server, socket: S
   return callback({ 
     success: true,
     data: {
-      tableId
+      tableId,
+      state: table
     } 
   });
 };

@@ -101,6 +101,13 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
       socket?.emit("join-table", { playerName, tableId }, (data: EventResponse<TableJoinedResponse>) => {
         if (data.success && data.data) {
           setTableId(data.data.tableId);
+          setPlayers(data.data.state.players);
+          setGameStatus(data.data.state.gameStatus);
+          setCards(data.data.state.cards);
+          setDeck(data.data.state.deck);
+          setBettingTimer(data.data.state.bettingTimer);
+          setExpectedPlayers(data.data.state.expectedPlayers);
+          setBaseBalance(data.data.state.baseBalance);
           console.log("Table joined:", data.data.tableId);
           resolve(data);
         } else {
