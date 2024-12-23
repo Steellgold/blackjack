@@ -8,7 +8,7 @@ import { useLang } from "@/lib/hooks/use-lang";
 import { getHandValue } from "@blackjack/game/utils";
 import { dylan } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
-import { Copy } from "lucide-react";
+import { Copy, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 
 const TablePage = () => {
@@ -50,11 +50,17 @@ const TablePage = () => {
           </div>
         </BlackjackCard>
 
-        <BlackjackCard className="flex flex-col sm:flex-row items-left gap-3 sm:gap-1 p-3 w-full">
+        <BlackjackCard className="flex flex-wrap sm:flex-row justify-center items-left gap-1.5 sm:gap-1.5 p-3 w-full">
           {players.map((player) => (
             <BlackjackCard key={player.id} className="flex flex-col items-center gap-3">
-              <img src={createAvatar(dylan, { seed: player.name || "Joueur" }).toDataUri()} alt="Avatar" className="rounded-md w-16 h-16" />
+              <img src={createAvatar(dylan, { seed: player.name || "Joueur" }).toDataUri()} alt="Avatar" className="rounded-md w-14 h-14 sm:w-16 sm:h-16" />
               <span className="font-bold">{player.name}</span>
+            </BlackjackCard>
+          ))}
+          {Array.from({ length: expectedPlayers - players.length }).map((_, i) => (
+            <BlackjackCard key={i} className="flex flex-col items-center gap-3 border-dashed">
+              <div className="flex w-14 h-14 sm:w-16 sm:h-16 bg-gray-200/10 justify-center items-center rounded-md" />
+              <span className="bg-gray-200/10 w-14 sm:w-16 h-4 rounded-md mt-0.5"></span>
             </BlackjackCard>
           ))}
         </BlackjackCard>
