@@ -36,6 +36,7 @@ export type GameState = {
   tableId: string | null; // Table ID
 
   players: Player[]; // Players in the game
+  id: string; // Game Hoster ID
 
   gameStatus: GameStatus; // Current game status
 

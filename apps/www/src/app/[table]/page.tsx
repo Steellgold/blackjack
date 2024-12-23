@@ -5,10 +5,9 @@ import { BlackjackButton } from "@/lib/components/ui/blackjack/blackjack-button"
 import { BlackjackCard } from "@/lib/components/ui/blackjack/blackjack-card";
 import { useBlackjack } from "@/lib/hooks/use-blackjack";
 import { useLang } from "@/lib/hooks/use-lang";
-import { getHandValue } from "@blackjack/game/utils";
 import { dylan } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
-import { Copy, Plus } from "lucide-react";
+import { Copy } from "lucide-react";
 import { useParams } from "next/navigation";
 
 const TablePage = () => {
@@ -18,7 +17,8 @@ const TablePage = () => {
     players,
     baseBalance,
     expectedPlayers,
-    gameStatus
+    gameStatus,
+    id,
   } = useBlackjack();
 
   if (gameStatus == "WAITING_FOR_PLAYERS") {
@@ -26,19 +26,49 @@ const TablePage = () => {
       <div className="flex flex-col items-center gap-1.5 max-w-xl mx-auto w-full p-3">
         <BlackjackCard className="flex flex-col sm:flex-row justify-between items-left gap-3 sm:gap-1 p-3 w-full">
           <div className="flex flex-col sm:w-7/12 gap-0.5">
-            <h1 className="text-lg">{lang === "fr" ? "En attente de joueurs" : "Waiting for players"}</h1>
-            <span className="text-xs">
-              {lang === "fr" ? (
-                <>En attente de <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> joueurs pour commencer la partie, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
-              ) : (
-                <>Waiting for <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> players to start the game, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
-              )}
-            </span>
+            {expectedPlayers == players.length ? (
+              <>
+                {players[0]?.id === id ? (
+                  <>
+                    <h1 className="text-lg">{lang === "fr" ? "Commencer la partie" : "Start the game"}</h1>
+                    <span className="text-xs">
+                      {lang === "fr" ? (
+                        <>Vous êtes le responsable de la partie, vous pouvez commencer la partie en un clic.</>
+                      ) : (
+                        <>You are the game host, you can start the game with a single click.</>
+                      )}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-lg">{lang === "fr" ? "La partie va commencer" : "The game is about to start"}</h1>
+                    <span className="text-xs">
+                      {lang === "fr" ? (
+                        <>La partie va commencer dans un instant, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
+                      ) : (
+                        <>The game will start in a moment, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
+                      )}
+                    </span>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <h1 className="text-lg">{lang === "fr" ? "En attente de joueurs" : "Waiting for players"}</h1>
+                <span className="text-xs">
+                  {lang === "fr" ? (
+                    <>En attente de <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> joueurs pour commencer la partie, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
+                  ) : (
+                    <>Waiting for <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> players to start the game, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
+                  )}
+                </span>
+              </>
+            )}
           </div>
 
           <div className="flex items-center justify-end gap-1">
             <div className="flex sm:flex-col justify-end gap-1">
-              <BlackjackButton size="small">
+              <BlackjackButton size="small" disabled={players[0]?.id !== id}>
                 {lang === "fr" ? "Commencer la partie" : "Start the game"}
               </BlackjackButton>
 
@@ -64,12 +94,6 @@ const TablePage = () => {
             </BlackjackCard>
           ))}
         </BlackjackCard>
-
-        <div className="justify-center">
-          <BlackjackButton size="small" variant="destructive">
-            {lang === "fr" ? "Annuler la partie" : "Cancel game"}
-          </BlackjackButton>
-        </div>
       </div>
     );
   }

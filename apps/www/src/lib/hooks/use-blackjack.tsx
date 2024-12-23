@@ -60,7 +60,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
       setPlayers(players);
     });  
 
-    // Ajoutez un listener pour tous les événements (debug uniquement)
+    // Debug all events received (for now - to be removed)
     socket.onAny((eventName, ...args) => {
       console.log("Received event:", eventName, args);
     });
@@ -137,6 +137,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
 
   const value: BlackjackState = {
     isSolo: false, // TODO: Implement single player mode (Just auto-launch the process when the player joins)
+    id: socket?.id ?? "", // Socket ID
 
     expectedPlayers,
     baseBalance,
