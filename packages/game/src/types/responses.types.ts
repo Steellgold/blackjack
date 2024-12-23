@@ -1,3 +1,4 @@
+import type { Card } from "./card.types";
 import type { GameState } from "./game.types";
 
 export type TableCreatedResponse = {
@@ -7,6 +8,11 @@ export type TableCreatedResponse = {
 export type TableJoinedResponse = {
   tableId: string;
   state: GameState;
+};
+
+export type TableStartResponse = {
+  tableId: string;
+  deck: Card[];
 };
 
 export type TableJoinableResponse = {

@@ -1,6 +1,6 @@
 "use client";
 
-import type { BlackjackState, Card, EventResponse, GameStatus, Player, TableCreatedResponse, TableJoinableResponse, TableJoinedResponse } from "@blackjack/game/types";
+import { type TableStartResponse, type BlackjackState, type Card, type EventResponse, type GameStatus, type Player, type TableCreatedResponse, type TableJoinableResponse, type TableJoinedResponse } from "@blackjack/game/types";
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
@@ -45,24 +45,50 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
   useEffect(() => {
     if (!socket) return;
 
-    console.log("Setting up socket listeners...");
+    // console.log("Setting up socket listeners...");
 
     socket.on("connect", () => {
-      console.log("Socket connected: ", socket.id);
+      // console.log("Socket connected: ", socket.id);
     });
   
     socket.on("error", (err) => {
-      console.error("Socket error: ", err);
+      // console.error("Socket error: ", err);
     });
   
     socket.on("players-update", (players) => {
-      console.log("Players update event received:", players);
+      // console.log("Players update event received:", players);
       setPlayers(players);
     });  
 
+    socket.on("deck-updated", (deck: Card[]) => {
+      setDeck(deck);
+    });
+
+    socket.on("card-distributed", ({ card, recipient }) => {
+      // console.log("Card distributed:", card, recipient);
+      if (recipient === "DEALER") {
+        setCards(prevCards => [...prevCards, card]);
+      } else {
+        setPlayers(prevPlayers => 
+          prevPlayers.map(player => 
+            player.id === recipient 
+              ? { ...player, cards: [...player.cards, card] }
+              : player
+          )
+        );
+      }
+    });
+
+    socket.on("game-status-changed", (status) => {
+      console.log("Game status:", gameStatus);
+      console.log("Game status received:", status);
+      setGameStatus(status);
+      console.log("Game status set:", gameStatus);
+    });
+
     // Debug all events received (for now - to be removed)
     socket.onAny((eventName, ...args) => {
-      console.log("Received event:", eventName, args);
+      // console.log("Received event:", eventName, args);
     });
 
     return () => {
@@ -135,6 +161,25 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
     });
   };
 
+  const startGame = (tableId: string) => {
+    return new Promise<EventResponse<TableStartResponse>>((resolve, reject) => {
+      if (!tableId) {
+        resolve({ success: false, error: "Table ID is missing" });
+        return;
+      }
+
+      socket?.emit("start-game", { tableId }, (data: EventResponse<TableStartResponse>) => {
+        console.log("Game started:", data);
+        if (data.success && data.data) {
+          console.log(data.data);
+          resolve(data);
+        } else {
+          reject(data);
+        }
+      });
+    });
+  };
+
   const value: BlackjackState = {
     isSolo: false, // TODO: Implement single player mode (Just auto-launch the process when the player joins)
     id: socket?.id ?? "", // Socket ID
@@ -146,6 +191,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
 
     createTable,
     joinTable,
+    startGame,
     tableId,
     
     players,

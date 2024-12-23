@@ -12,13 +12,18 @@ import { useParams } from "next/navigation";
 
 const TablePage = () => {
   const { table } = useParams();
+  if (typeof table !== "string") return <></>;
+
   const { lang } = useLang();
   const {
     players,
     baseBalance,
     expectedPlayers,
     gameStatus,
+    cards: dealerCards,
+    deck,
     id,
+    startGame
   } = useBlackjack();
 
   if (gameStatus == "WAITING_FOR_PLAYERS") {
@@ -68,7 +73,14 @@ const TablePage = () => {
 
           <div className="flex items-center justify-end gap-1">
             <div className="flex sm:flex-col justify-end gap-1">
-              <BlackjackButton size="small" disabled={players[0]?.id !== id}>
+              <BlackjackButton
+                size="small"
+                disabled={
+                  players[0]?.id !== id
+                  // || players.length !== expectedPlayers
+                }
+                onClick={() => startGame(table)}
+              >
                 {lang === "fr" ? "Commencer la partie" : "Start the game"}
               </BlackjackButton>
 
@@ -97,6 +109,43 @@ const TablePage = () => {
       </div>
     );
   }
+
+  if (gameStatus !== "WAITING_FOR_DISTRIBUTES") {
+    return (
+      <>
+        <BlackjackCard className="flex flex-col items-center gap-3">
+          <h1 className="text-lg">{lang === "fr" ? "Distribution des cartes" : "Distributing cards"}</h1>
+          <span className="text-xs">
+            {lang === "fr" ? (
+              <>Les cartes sont en cours de distribution, chaque joueur recevra deux cartes.</>
+            ) : (
+              <>The cards are being distributed, each player will receive two cards.</>
+            )}
+          </span>
+        </BlackjackCard>
+
+        {/* Croupier: */}
+        <BlackjackCard className="flex flex-col items-center gap-3">
+          <img src={createAvatar(dylan, { seed: "Croupier" }).toDataUri()} alt="Avatar" className="rounded-md w-14 h-14 sm:w-16 sm:h-16" />
+          <span className="font-bold">Croupier</span>
+          <span className="font-bold">{dealerCards.length} cartes</span>
+          <span className="font-bold">{deck.length} cartes restantes</span>
+        </BlackjackCard>
+
+        {players.map((player) => (
+          <BlackjackCard key={player.id} className="flex flex-col items-center gap-3">
+            <img src={createAvatar(dylan, { seed: player.name || "Joueur" }).toDataUri()} alt="Avatar" className="rounded-md w-14 h-14 sm:w-16 sm:h-16" />
+            <span className="font-bold">{player.name}</span>
+            <span className="font-bold">{player.cards.length} cartes</span>
+          </BlackjackCard>
+        ))}
+      </>
+    )
+  }
+
+  return (
+    <p>Game status: {gameStatus}</p>
+  )
 };
 
 export default TablePage;

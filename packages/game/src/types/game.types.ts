@@ -1,5 +1,5 @@
 import type { Card } from "./card.types";
-import type { EventResponse, TableCreatedResponse, TableJoinableResponse, TableJoinedResponse } from "./responses.types";
+import type { EventResponse, TableCreatedResponse, TableJoinableResponse, TableJoinedResponse, TableStartResponse } from "./responses.types";
 
 export type GameStatus = 
   "WAITING_FOR_PLAYERS" | // Waiting for players to join - When OK: WAITING_FOR_BETS
@@ -51,6 +51,7 @@ export type BlackjackState = GameState & {
 
   createTable: (data: { expectedPlayers: number; baseBalance: number; }) => Promise<EventResponse<TableCreatedResponse>>; // Create a new table
   joinTable: (playerName: string, playerId: string) => Promise<EventResponse<TableJoinedResponse>>; // Join a table
+  startGame: (tableId: string) => Promise<EventResponse<TableStartResponse>>; // Start the game
 
   setGameStatus: (status: GameStatus) => void; // Set game status
 };
