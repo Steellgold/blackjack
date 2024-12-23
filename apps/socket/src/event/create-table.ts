@@ -24,7 +24,7 @@ export const execute: EventExecute<CreateTableData> = async (io: Server, socket:
     tableId,
     expectedPlayers,
     baseBalance,
-
+    id: socket.id,
 
     isSolo: false // TODO.
   })
