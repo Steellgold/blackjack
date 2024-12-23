@@ -35,7 +35,10 @@ const Page = () => {
     }
 
     if (type === "create") {
-      const data = await createTable();
+      const data = await createTable({
+        expectedPlayers,
+        baseBalance: parseInt(balance)
+      });
       if (data.success && data.data?.tableId) {
         joinTable(playerName, data.data.tableId);
         router.push(`/${data.data.tableId}`);

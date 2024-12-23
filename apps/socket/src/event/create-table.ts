@@ -13,6 +13,8 @@ export const execute: EventExecute<CreateTableData> = async (io: Server, socket:
   const { baseBalance, expectedPlayers } = data;
   const tableId = "abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVWYZ1234567890".split("").sort(() => 0.5 - Math.random()).slice(0, 4).join("");
 
+  console.log(`Creating table ${tableId} with ${expectedPlayers} players and base balance of ${baseBalance}`);
+
   tables.set(tableId, {
     players: [],
     gameStatus: "WAITING_FOR_PLAYERS",

@@ -48,7 +48,7 @@ export type GameState = {
 export type BlackjackState = GameState & {
   canJoinTable: (tableId: string) => Promise<EventResponse<TableJoinableResponse>>; // Check if a player can join a table
 
-  createTable: () => Promise<EventResponse<TableCreatedResponse>>; // Create a new table
+  createTable: (data: { expectedPlayers: number; baseBalance: number; }) => Promise<EventResponse<TableCreatedResponse>>; // Create a new table
   joinTable: (playerName: string, playerId: string) => Promise<EventResponse<TableJoinedResponse>>; // Join a table
 
   setGameStatus: (status: GameStatus) => void; // Set game status

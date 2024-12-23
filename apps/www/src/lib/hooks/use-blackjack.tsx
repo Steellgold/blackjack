@@ -21,7 +21,9 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
 
   const [tableId, setTableId] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
+
   const [expectedPlayers, setExpectedPlayers] = useState<number>(0);
+  const [baseBalance, setBaseBalance] = useState<number>(0);
   
   const [cards, setCards] = useState<Card[]>([]); // Dealer's cards
   const [deck, setDeck] = useState<Card[]>([]); // Deck of cards
@@ -70,12 +72,16 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
     };
   }, [socket]);
 
-  const createTable = async () => {
+  const createTable = async (createData: { expectedPlayers: number, baseBalance: number }) => {
     return new Promise<EventResponse<TableCreatedResponse>>((resolve, reject) => {
-      socket?.emit("create-table", {}, (data: EventResponse<TableCreatedResponse>) => {
+      socket?.emit("create-table", {
+        expectedPlayers: createData.expectedPlayers,
+        baseBalance: createData.baseBalance
+      }, (data: EventResponse<TableCreatedResponse>) => {
         if (data.success && data.data) {
           setTableId(data.data.tableId);
-          console.log("Table created:", data.data.tableId);
+          setExpectedPlayers(createData.expectedPlayers);
+          setBaseBalance(createData.baseBalance);
           resolve(data);
         } else {
           console.error("Failed to create table:", data);
@@ -124,7 +130,9 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
 
   const value: BlackjackState = {
     isSolo: false, // TODO: Implement single player mode (Just auto-launch the process when the player joins)
+
     expectedPlayers,
+    baseBalance,
 
     canJoinTable,
 
