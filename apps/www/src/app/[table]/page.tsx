@@ -29,9 +29,9 @@ const TablePage = () => {
             <h1 className="text-lg">{lang === "fr" ? "En attente de joueurs" : "Waiting for players"}</h1>
             <span className="text-xs">
               {lang === "fr" ? (
-                <>En attente de <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> joueurs pour commencer la partie, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
+                <>En attente de <BlackjackBadge>{players.length - expectedPlayers}</BlackjackBadge> joueurs pour commencer la partie, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
               ) : (
-                <>Waiting for <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> players to start the game, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
+                <>Waiting for <BlackjackBadge>{players.length - expectedPlayers}</BlackjackBadge> players to start the game, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
               )}
             </span>
           </div>
@@ -50,7 +50,7 @@ const TablePage = () => {
           </div>
         </BlackjackCard>
 
-        <BlackjackCard className="flex flex-col sm:flex-row justify-between items-left gap-3 sm:gap-1 p-3 w-full">
+        <BlackjackCard className="flex flex-col sm:flex-row items-left gap-3 sm:gap-1 p-3 w-full">
           {players.map((player) => (
             <BlackjackCard key={player.id} className="flex flex-col items-center gap-3">
               <img src={createAvatar(dylan, { seed: player.name || "Joueur" }).toDataUri()} alt="Avatar" className="rounded-md w-16 h-16" />
