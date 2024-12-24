@@ -1,12 +1,12 @@
 "use client";
 
-import { ReactElement, useState } from "react";
-import { BlackjackCard } from "../../_components/ui/blackjack-card";
-import { BlackjackInput } from "../../_components/ui/blackjack-input";
-import { BlackjackButton } from "../../_components/ui/blackjack-button";
 import { MessagesSquare, Users, X } from "lucide-react";
 import { dayJS } from "@/lib/utils/dayjs/day-js";
-import { Component } from "@/lib/components/utils/component";
+import { useState } from "react";
+import type { Component } from "../../utils/component";
+import { BlackjackButton } from "./blackjack-button";
+import { BlackjackCard } from "./blackjack-card";
+import { BlackjackInput } from "./blackjack-input";
 
 type BlackjackChatProps = {
   gameId: string;
@@ -20,7 +20,7 @@ type Message = {
   timestamp: number;
 };
 
-export const BlackjackChat: Component<BlackjackChatProps> = ({ gameId }) => {
+export const BlackjackChat: Component<BlackjackChatProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [message, setMessage] = useState("");
