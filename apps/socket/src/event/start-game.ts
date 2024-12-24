@@ -59,6 +59,32 @@ const distributeInitialCards = async (table: GameState, io: Server) => {
     io.to(table.tableId).emit("card-distributed", { card: playerCard, recipient: player.id });
     await sleep(1000);
   }
+
+  // Third round of player cards
+  for (const player of table.players) {
+    const playerCard = table.deck.pop();
+    if (!playerCard) return; // No more cards (never happen but just in case)
+    io.to(table.tableId).emit("deck-updated", table.deck);
+
+    playerCard.owner = "PLAYER";
+    playerCard.isHidden = false;
+    player.cards.push(playerCard);
+    io.to(table.tableId).emit("card-distributed", { card: playerCard, recipient: player.id });
+    await sleep(1000);
+  }
+
+  // Fourth round of player cards
+  for (const player of table.players) {
+    const playerCard = table.deck.pop();
+    if (!playerCard) return; // No more cards (never happen but just in case)
+    io.to(table.tableId).emit("deck-updated", table.deck);
+
+    playerCard.owner = "PLAYER";
+    playerCard.isHidden = false;
+    player.cards.push(playerCard);
+    io.to(table.tableId).emit("card-distributed", { card: playerCard, recipient: player.id });
+    await sleep(1000);
+  }
 };
 
 export const execute: EventExecute<StartData> = async (io: Server, socket: Socket, data, callback) => {
@@ -81,11 +107,14 @@ export const execute: EventExecute<StartData> = async (io: Server, socket: Socke
   }
 
   table.gameStatus = "WAITING_FOR_BETS";
+  io.to(tableId).emit("game-status-changed", table.gameStatus);
+
   table.bettingTimer = 10;
+  io.to(tableId).emit("betting-timer", table.bettingTimer);
 
   const interval = setInterval(() => {
     table.bettingTimer--;
-    console.log(`[${tableId}] Betting timer: ${table.bettingTimer}`);
+    io.to(tableId).emit("betting-timer", table.bettingTimer);
 
     if (table.bettingTimer <= 0) {
       table.players.forEach((player) => {

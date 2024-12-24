@@ -2,11 +2,13 @@
 
 import { cn } from "@/lib/utils";
 import { Club, Diamond, Heart, Spade } from "lucide-react";
-import type { ReactElement } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import type { Card, Suit } from "../types/blackjack.types";
+import { useBlackjack } from "../hooks/use-blackjack";
+import type { Component } from "./utils/component";
+import type { ReactElement } from "react";
+import type { Card, Suit } from "@blackjack/game/types";
 
-const suitToIcon = (suit: Suit): ReactElement => {
+export const suitToIcon = (suit: Suit): ReactElement => {
   switch (suit) {
     case "Hearts":
       return <Heart size={16} stroke="#e04f4f" fill="#e04f4f" />;
@@ -19,7 +21,11 @@ const suitToIcon = (suit: Suit): ReactElement => {
   }
 }
 
-export const BlackjackCard = ({ suit, rank, isHidden, isStackedLast, isReloadCard, owner = "PLAYER" }: Card): ReactElement => {
+type BlackjackCardProps = Card & {
+  cancelAnimation?: boolean;
+}
+
+export const BlackjackCard: Component<BlackjackCardProps> = ({ rank, suit, owner, isHidden, isReloadCard, cancelAnimation, isStackedLast }) => {
   return (
     <div className={cn(
       "relative bg-[#f5f7f6] rounded-md border-2 transition-transform duration-300 ease-in-out",
@@ -29,8 +35,8 @@ export const BlackjackCard = ({ suit, rank, isHidden, isStackedLast, isReloadCar
         "bg-red-600 border-red-500": isReloadCard,
         "bg-blue-50 border-blue-100": isHidden && !isReloadCard,
         "transition-transform duration-300 ease-in-out": !isStackedLast && !isHidden,
-        "hover:translate-y-[-5rem] hover:-rotate-12": !isStackedLast && !isHidden && owner === "PLAYER",
-        "hover:translate-y-[5rem] hover:rotate-12": !isStackedLast && !isHidden && owner === "DEALER",
+        "hover:translate-y-[-5rem] hover:-rotate-12": !isStackedLast && !isHidden && owner === "PLAYER" && !cancelAnimation,
+        "hover:translate-y-[5rem] hover:rotate-12": !isStackedLast && !isHidden && owner === "DEALER" && !cancelAnimation,
       }
     )}>
       {rank && !isHidden && !isReloadCard &&
@@ -81,8 +87,14 @@ export const BlackjackCard = ({ suit, rank, isHidden, isStackedLast, isReloadCar
   )
 }
 
-export const BlackjackCardsStack = ({ cards }: { cards: Card[] }): ReactElement => {
+type BlackjackCardsStackProps = {
+  cards: Card[];
+  playerId: string | "DEALER";
+}
+
+export const BlackjackCardsStack: Component<BlackjackCardsStackProps> = ({ cards, playerId }) => {
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const { id } = useBlackjack();
 
   if (cards.length === 0) {
     return <EmptyBlackjackCard />
@@ -99,7 +111,14 @@ export const BlackjackCardsStack = ({ cards }: { cards: Card[] }): ReactElement 
           }}
           className={cn("absolute")}
         >
-          <BlackjackCard {...card} isStacked={true} isStackedLast={index === cards.length - 1 ? index : undefined} />
+          <BlackjackCard
+            {...card}
+            isStacked={true}
+            isStackedLast={index === cards.length - 1 ? index : undefined}
+            cancelAnimation={
+              playerId == "DEALER" ? false : id !== playerId
+            }
+          />
         </div>
       ))}
     </div>

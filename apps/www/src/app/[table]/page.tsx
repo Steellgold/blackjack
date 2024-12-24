@@ -9,6 +9,8 @@ import { dylan } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
 import { Copy } from "lucide-react";
 import { useParams } from "next/navigation";
+import { WaitingPlayers } from "./_views/waiting-players.view";
+import { WaitingDistributes } from "./_views/waiting-distributes.view";
 
 const TablePage = () => {
   const { table } = useParams();
@@ -26,122 +28,9 @@ const TablePage = () => {
     startGame
   } = useBlackjack();
 
-  if (gameStatus == "WAITING_FOR_PLAYERS") {
-    return (
-      <div className="flex flex-col items-center gap-1.5 max-w-xl mx-auto w-full p-3">
-        <BlackjackCard className="flex flex-col sm:flex-row justify-between items-left gap-3 sm:gap-1 p-3 w-full">
-          <div className="flex flex-col sm:w-7/12 gap-0.5">
-            {expectedPlayers == players.length ? (
-              <>
-                {players[0]?.id === id ? (
-                  <>
-                    <h1 className="text-lg">{lang === "fr" ? "Commencer la partie" : "Start the game"}</h1>
-                    <span className="text-xs">
-                      {lang === "fr" ? (
-                        <>Vous êtes le responsable de la partie, vous pouvez commencer la partie en un clic.</>
-                      ) : (
-                        <>You are the game host, you can start the game with a single click.</>
-                      )}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <h1 className="text-lg">{lang === "fr" ? "La partie va commencer" : "The game is about to start"}</h1>
-                    <span className="text-xs">
-                      {lang === "fr" ? (
-                        <>La partie va commencer dans un instant, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
-                      ) : (
-                        <>The game will start in a moment, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
-                      )}
-                    </span>
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                <h1 className="text-lg">{lang === "fr" ? "En attente de joueurs" : "Waiting for players"}</h1>
-                <span className="text-xs">
-                  {lang === "fr" ? (
-                    <>En attente de <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> joueurs pour commencer la partie, chaque joueur commence avec <BlackjackBadge>{baseBalance}€</BlackjackBadge> en jetons.</>
-                  ) : (
-                    <>Waiting for <BlackjackBadge>{expectedPlayers - players.length}</BlackjackBadge> players to start the game, each player starts with <BlackjackBadge>{baseBalance}€</BlackjackBadge> in chips.</>
-                  )}
-                </span>
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center justify-end gap-1">
-            <div className="flex sm:flex-col justify-end gap-1">
-              <BlackjackButton
-                size="small"
-                disabled={
-                  players[0]?.id !== id
-                  // || players.length !== expectedPlayers
-                }
-                onClick={() => startGame(table)}
-              >
-                {lang === "fr" ? "Commencer la partie" : "Start the game"}
-              </BlackjackButton>
-
-              <BlackjackButton size="small" className="flex items-center gap-1.5">
-                <Copy className="w-4 h-4" />
-                {lang === "fr" ? "Copier le code" : "Copy code"}
-              </BlackjackButton>
-            </div>
-          </div>
-        </BlackjackCard>
-
-        <BlackjackCard className="flex flex-wrap sm:flex-row justify-center items-left gap-1.5 sm:gap-1.5 p-3 w-full">
-          {players.map((player) => (
-            <BlackjackCard key={player.id} className="flex flex-col items-center gap-3">
-              <img src={createAvatar(dylan, { seed: player.name || "Joueur" }).toDataUri()} alt="Avatar" className="rounded-md w-14 h-14 sm:w-16 sm:h-16" />
-              <span className="font-bold">{player.name}</span>
-            </BlackjackCard>
-          ))}
-          {Array.from({ length: expectedPlayers - players.length }).map((_, i) => (
-            <BlackjackCard key={i} className="flex flex-col items-center gap-3 border-dashed">
-              <div className="flex w-14 h-14 sm:w-16 sm:h-16 bg-gray-200/10 justify-center items-center rounded-md" />
-              <span className="bg-gray-200/10 w-14 sm:w-16 h-4 rounded-md mt-0.5"></span>
-            </BlackjackCard>
-          ))}
-        </BlackjackCard>
-      </div>
-    );
-  }
-
-  if (gameStatus !== "WAITING_FOR_DISTRIBUTES") {
-    return (
-      <>
-        <BlackjackCard className="flex flex-col items-center gap-3">
-          <h1 className="text-lg">{lang === "fr" ? "Distribution des cartes" : "Distributing cards"}</h1>
-          <span className="text-xs">
-            {lang === "fr" ? (
-              <>Les cartes sont en cours de distribution, chaque joueur recevra deux cartes.</>
-            ) : (
-              <>The cards are being distributed, each player will receive two cards.</>
-            )}
-          </span>
-        </BlackjackCard>
-
-        {/* Croupier: */}
-        <BlackjackCard className="flex flex-col items-center gap-3">
-          <img src={createAvatar(dylan, { seed: "Croupier" }).toDataUri()} alt="Avatar" className="rounded-md w-14 h-14 sm:w-16 sm:h-16" />
-          <span className="font-bold">Croupier</span>
-          <span className="font-bold">{dealerCards.length} cartes</span>
-          <span className="font-bold">{deck.length} cartes restantes</span>
-        </BlackjackCard>
-
-        {players.map((player) => (
-          <BlackjackCard key={player.id} className="flex flex-col items-center gap-3">
-            <img src={createAvatar(dylan, { seed: player.name || "Joueur" }).toDataUri()} alt="Avatar" className="rounded-md w-14 h-14 sm:w-16 sm:h-16" />
-            <span className="font-bold">{player.name}</span>
-            <span className="font-bold">{player.cards.length} cartes</span>
-          </BlackjackCard>
-        ))}
-      </>
-    )
-  }
+  if (gameStatus == "WAITING_FOR_PLAYERS") return <WaitingPlayers />;
+  if (gameStatus == "WAITING_FOR_DISTRIBUTES") return <WaitingDistributes />;
+  return <WaitingDistributes />;
 
   return (
     <p>Game status: {gameStatus}</p>

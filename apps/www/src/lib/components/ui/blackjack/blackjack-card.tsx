@@ -1,8 +1,8 @@
 "use client";
 
-import { Component } from "@/lib/components/utils/component";
 import { cn } from "@/lib/utils";
 import React from "react";
+import type { Component } from "../../utils/component";
 
 export type BlackjackCardVariant = "default" | "destructive" | "success" | "warning"; 
 
