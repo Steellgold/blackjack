@@ -33,7 +33,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
 
   useEffect(() => {
     if (!socket) {
-      const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "https://socket.blackjack.fr");
+      const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "https://socket.blackjack.steellgold.fr");
       setSocket(newSocket);
 
       return () => {
