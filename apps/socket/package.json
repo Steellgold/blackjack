@@ -1,7 +1,8 @@
 {
   "name": "@blackjack/socket",
   "scripts": {
-    "dev": "tsx ./src/index.ts --watch --noEmit"
+    "dev": "tsx ./src/index.ts --watch --noEmit",
+    "start": "tsx --no-warnings ./src/index.ts"
   },
   "dependencies": {
     "@blackjack/game": "workspace:*",

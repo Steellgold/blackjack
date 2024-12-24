@@ -1,9 +1,13 @@
 {
   "scripts": {
       "dev": "open-cli http://localhost:3000 && dotenv -- pnpm --filter=@core-app/* --recursive run dev",
-      "build": "dotenv -- pnpm --filter=@core* --recursive run build",
-      "start:website": "pnpm --filter=@core-app/website run start",
-      "start:socket": "pnpm --filter=@core-app/socket run start"
+      "build:all": "dotenv -- pnpm --filter=@blackjack/* --recursive run build",
+
+      "start:website": "pnpm --filter=@blackjack/website run start",
+      "start:socket": "pnpm --filter=@blackjack/socket run start",
+
+      "build:website": "dotenv -- pnpm --filter=@blackjack/website run build",
+      "build:socket": "pnpm --filter=@blackjack/socket run build"
   },
   "dependencies": {
       "dotenv": "^16.4.5",
