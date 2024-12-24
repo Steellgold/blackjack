@@ -1,7 +1,9 @@
 {
   "scripts": {
-      "dev": "pnpm --filter=./apps/* --recursive run dev",
-      "build": "pnpm --filter=./apps/* --recursive run build"
+    "dev": "open-cli http://localhost:3000 && dotenv -- pnpm --filter=@core-app/* --recursive run dev",
+    "build": "dotenv -- pnpm --filter=@core* --recursive run build",
+    "start:website": "pnpm --filter=@core-app/website run start",
+    "start:socket": "pnpm --filter=@core-app/socket run start"
   },
   "engines": {
       "node": ">=20.0.0",
