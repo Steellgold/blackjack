@@ -1,3 +1,5 @@
+"use client";
+
 import { BlackjackBadge } from "@/lib/components/ui/blackjack/blackjack-badge";
 import { BlackjackButton } from "@/lib/components/ui/blackjack/blackjack-button";
 import { BlackjackCard } from "@/lib/components/ui/blackjack/blackjack-card";
@@ -9,6 +11,7 @@ import { Copy } from "lucide-react";
 
 export const WaitingPlayers = () => {
   const { lang } = useLang();
+
   const {
     tableId,
     players,
@@ -18,7 +21,7 @@ export const WaitingPlayers = () => {
     startGame
   } = useBlackjack();
 
-  if (!tableId) return <div className="bg-red-500">Table not found !</div>;
+  if (!tableId) return null;
 
   return (
     <div className="flex flex-col items-center gap-1.5 max-w-xl mx-auto w-full p-3">

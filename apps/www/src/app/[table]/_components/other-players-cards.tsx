@@ -2,13 +2,11 @@ import { suitToIcon } from "@/lib/components/blackjack-card";
 import { BlackjackCard } from "@/lib/components/ui/blackjack/blackjack-card";
 import { getHandValue } from "@blackjack/game/utils";
 import { useBlackjack } from "@/lib/hooks/use-blackjack";
-import { useLang } from "@/lib/hooks/use-lang";
 import { cn } from "@/lib/utils";
 import type { ReactElement } from "react";
 import type { Player } from "@blackjack/game/types";
 
 export const OtherPlayersCardsCard = (): ReactElement => {
-  const { lang } = useLang();
   const { id, players } = useBlackjack();
 
   if (!players) return <div className="bg-red-500">Players not found !</div>;

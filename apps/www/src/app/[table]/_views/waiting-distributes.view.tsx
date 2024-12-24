@@ -1,13 +1,13 @@
+"use client";
+
 import { BlackjackCardsStack } from "@/lib/components/blackjack-card"
 import { BlackjackCard as UIBlackjackCard } from "@/lib/components/ui/blackjack/blackjack-card"
 import { useBlackjack } from "@/lib/hooks/use-blackjack"
-import { useLang } from "@/lib/hooks/use-lang"
 import { OtherPlayersCardsCard } from "../_components/other-players-cards"
 import { getHandValue } from "@blackjack/game/utils"
 
 export const WaitingDistributes = () => {
-  const { lang } = useLang();
-  const { players, cards: dealerCards, deck, id } = useBlackjack();
+  const { players, cards: dealerCards, id } = useBlackjack();
 
   const player = players.find(player => player.id === id);
   if (!player) return <div className="bg-red-500">Player not found !</div>;
