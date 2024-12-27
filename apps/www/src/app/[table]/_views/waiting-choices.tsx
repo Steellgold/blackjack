@@ -1,12 +1,11 @@
 "use client";
 
-import { BlackjackBet } from "@/lib/components/blackjack-bet";
 import { BlackjackView } from "../_components/blackjack.view";
 
-export const WaitingBetting = () => {
+export const WaitingPlayerChoices = () => {
   return (
     <BlackjackView>
-      <BlackjackBet />
+      <p>Waiting for player choices</p>
     </BlackjackView>
   )
 }

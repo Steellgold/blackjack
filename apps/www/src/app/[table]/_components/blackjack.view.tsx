@@ -1,13 +1,15 @@
 "use client";
 
-import { BlackjackCardsStack } from "@/lib/components/blackjack-card"
-import { BlackjackCard as UIBlackjackCard } from "@/lib/components/ui/blackjack/blackjack-card"
-import { useBlackjack } from "@/lib/hooks/use-blackjack"
-import { OtherPlayersCardsCard } from "../_components/other-players-cards"
-import { getHandValue } from "@blackjack/game/utils"
 import { BlackjackBets } from "@/lib/components/blackjack-bet";
+import { BlackjackCardsStack } from "@/lib/components/blackjack-card";
+import { BlackjackCard as UIBlackjackCard } from "@/lib/components/ui/blackjack/blackjack-card";
+import type { Component } from "@/lib/components/utils/component";
+import { useBlackjack } from "@/lib/hooks/use-blackjack";
+import { getHandValue } from "@blackjack/game/utils";
+import type { PropsWithChildren } from "react";
+import OtherPlayersCardsCard from "./other-players-cards";
 
-export const WaitingDistributes = () => {
+export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
   const { players, cards: dealerCards, id } = useBlackjack();
 
   const player = players.find(player => player.id === id);
@@ -18,6 +20,8 @@ export const WaitingDistributes = () => {
       <UIBlackjackCard variant={getHandValue(dealerCards) > 21 ? "destructive" : "default"}>
         <BlackjackCardsStack cards={dealerCards} playerId="DEALER" />
       </UIBlackjackCard>
+      
+      {children}
       
       <div className="flex flex-wrap gap-11">
         <UIBlackjackCard key={player.id} variant={getHandValue(player.cards) > 21 ? "destructive" : "default"}>

@@ -161,7 +161,7 @@ export const BlackjackBets = () => {
     >
       {player.bets.length >= 1 ? player.bets.map((value, index) => (
         <div
-          key={value}
+          key={index}
           className="absolute transition-transform duration-300 ease-in-out"
           style={{
             transform: isHover ? `translateY(${index * -5}px)` : `translateY(0px)`,
