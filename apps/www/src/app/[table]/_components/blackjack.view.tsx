@@ -29,7 +29,7 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
         </UIBlackjackCard>
       </div>
 
-      <UIBlackjackCard className="absolute bottom-4 left-4 p-2">
+      <UIBlackjackCard className="absolute bottom-4 right-4 p-2">
         <BlackjackBets />
       </UIBlackjackCard>
 
