@@ -1,6 +1,6 @@
 {
   "scripts": {
-      "dev": "open-cli http://localhost:3000 && dotenv -- pnpm --filter=@core-app/* --recursive run dev",
+      "dev": "open-cli http://localhost:3000 && dotenv -- pnpm --filter=@blackjack/* --recursive run dev",
       "build:all": "dotenv -- pnpm --filter=@blackjack/* --recursive run build",
 
       "start:website": "pnpm --filter=@blackjack/website run start",
