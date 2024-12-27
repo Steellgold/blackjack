@@ -14,6 +14,7 @@ export type PlayerStatus =
   "BETTED" | // Player has placed a bet
   "WAITING" | // Player is playing
   "NOT_BETTED" | // Player has not placed a bet and waiting for the next round
+  "NOT_CHOSEN" | // Player has not chosen to hit or stand  
   "STAND" | // Player has chosen to stand
   "HIT" | // Player has chosen to hit
   "BUST" | // Player has busted

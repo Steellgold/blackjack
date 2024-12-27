@@ -103,6 +103,8 @@ export const execute: EventExecute<StartData> = async (io: Server, socket: Socke
 
       distributeInitialCards(table, io).then(() => {
         table.gameStatus = "WAITING_FOR_PLAYER_CHOICES";
+        table.players.forEach((player) => player.status = "NOT_CHOSEN");
+
         io.to(tableId).emit("game-status-changed", table.gameStatus);
       });
     }

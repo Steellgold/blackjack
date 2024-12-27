@@ -47,9 +47,6 @@ export const BlackjackButtons = (): ReactElement => {
           </div>
         </div>
       </BlackjackCard>
-      
-      <div className="flex flex-col sm:flex-row gap-1">
-      </div>
     </div>
   )
 }
