@@ -1,6 +1,6 @@
 "use client";
 
-import { type TableStartResponse, type BlackjackState, type Card, type EventResponse, type GameStatus, type Player, type TableCreatedResponse, type TableJoinableResponse, type TableJoinedResponse } from "@blackjack/game/types";
+import { type TableStartResponse, type BlackjackState, type Card, type EventResponse, type GameStatus, type Player, type TableCreatedResponse, type TableJoinableResponse, type TableJoinedResponse, type ChipValue, type TableBetResponse } from "@blackjack/game/types";
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
@@ -45,18 +45,17 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
   useEffect(() => {
     if (!socket) return;
 
-    // console.log("Setting up socket listeners...");
+    console.log("Setting up socket listeners...");
 
     socket.on("connect", () => {
-      // console.log("Socket connected: ", socket.id);
+      console.log("Socket connected: ", socket.id);
     });
   
     socket.on("error", (err) => {
-      // console.error("Socket error: ", err);
+      console.error("Socket error: ", err);
     });
   
     socket.on("players-update", (players) => {
-      // console.log("Players update event received:", players);
       setPlayers(players);
     });  
 
@@ -64,8 +63,11 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
       setDeck(deck);
     });
 
+    socket.on("betting-timer", (timer: number) => {
+      setBettingTimer(timer);
+    });
+
     socket.on("card-distributed", ({ card, recipient }) => {
-      // console.log("Card distributed:", card, recipient);
       if (recipient === "DEALER") {
         setCards(prevCards => [...prevCards, card]);
       } else {
@@ -84,11 +86,6 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
       console.log("Game status received:", status);
       setGameStatus(status);
       console.log("Game status set:", gameStatus);
-    });
-
-    // Debug all events received (for now - to be removed)
-    socket.onAny((eventName, ...args) => {
-      // console.log("Received event:", eventName, args);
     });
 
     return () => {
@@ -150,14 +147,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
         return;
       }
 
-      socket?.emit("can-join-table", { tableId }, (data: EventResponse<TableJoinableResponse>) => {
-        resolve(data);
-        // if (data.success) {
-        //   resolve(data);
-        // } else {
-        //   reject(data);
-        // }
-      });
+      socket?.emit("can-join-table", { tableId }, (data: EventResponse<TableJoinableResponse>) => resolve(data));
     });
   };
 
@@ -169,12 +159,44 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
       }
 
       socket?.emit("start-game", { tableId }, (data: EventResponse<TableStartResponse>) => {
-        console.log("Game started:", data);
         if (data.success && data.data) {
-          console.log(data.data);
           resolve(data);
         } else {
           reject(data);
+        }
+      });
+    });
+  };
+
+  const addBet = (amount: ChipValue) => {
+    return new Promise<EventResponse<TableBetResponse>>((resolve, reject) => {
+      if (!tableId || !socket) {
+        reject({ success: false, error: "No table or socket connection" });
+        return;
+      }
+  
+      socket.emit("add-bet", { tableId, amount }, (response: EventResponse<TableBetResponse>) => {
+        if (response.success) {
+          resolve(response);
+        } else {
+          reject(response);
+        }
+      });
+    });
+  };
+  
+  const removeBet = () => {
+    return new Promise<EventResponse<TableBetResponse>>((resolve, reject) => {
+      if (!tableId || !socket) {
+        reject({ success: false, error: "No table or socket connection" });
+        return;
+      }
+  
+      socket.emit("remove-bet", { tableId }, (response: EventResponse<TableBetResponse>) => {
+        if (response.success) {
+          resolve(response);
+        } else {
+          reject(response);
         }
       });
     });
@@ -200,6 +222,8 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
     setGameStatus,
 
     bettingTimer,
+    addBet,
+    removeBet,
 
     cards,
     deck,
