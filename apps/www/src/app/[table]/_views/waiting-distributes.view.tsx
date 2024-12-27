@@ -5,6 +5,7 @@ import { BlackjackCard as UIBlackjackCard } from "@/lib/components/ui/blackjack/
 import { useBlackjack } from "@/lib/hooks/use-blackjack"
 import { OtherPlayersCardsCard } from "../_components/other-players-cards"
 import { getHandValue } from "@blackjack/game/utils"
+import { BlackjackBets } from "@/lib/components/blackjack-bet";
 
 export const WaitingDistributes = () => {
   const { players, cards: dealerCards, id } = useBlackjack();
@@ -23,6 +24,10 @@ export const WaitingDistributes = () => {
           <BlackjackCardsStack cards={player.cards} playerId={player.id} />
         </UIBlackjackCard>
       </div>
+
+      <UIBlackjackCard className="absolute bottom-4 left-4 p-2">
+        <BlackjackBets />
+      </UIBlackjackCard>
 
       <OtherPlayersCardsCard />
     </div>

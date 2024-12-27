@@ -19,6 +19,10 @@ export type TableJoinableResponse = {
   tableId: string;
 };
 
+export type TableBetResponse = {
+  bets: number[];
+};
+
 export type EventResponse<R = unknown> = {
   success: boolean;
   error?: string;
