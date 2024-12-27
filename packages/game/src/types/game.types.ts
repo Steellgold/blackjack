@@ -59,4 +59,7 @@ export type BlackjackState = GameState & {
 
   addBet: (amount: ChipValue) => void; // Add a bet
   removeBet: () => void; // Remove the last bet
+
+  hit: () => void; // Hit
+  stand: () => void; // Stand
 };
