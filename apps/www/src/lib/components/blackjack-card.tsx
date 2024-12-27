@@ -45,9 +45,9 @@ export const BlackjackCard: Component<BlackjackCardProps> = ({ rank, suit, owner
           "text-black": ["Clubs", "Spades"].includes(suit)
         })}>
           {/* TOP LEFT */}
-          <span className="absolute top-0 left-0 p-1.5 font-bold">{rank}</span>
+          <span className="absolute    top-0 left-0 p-1.5 font-bold select-none">{rank}</span>
           {/* BOTTOM RIGHT */}
-          <span className="absolute bottom-0 right-0 p-1.5 font-bold">{rank}</span>
+          <span className="absolute bottom-0 right-0 p-1.5 font-bold select-none">{rank}</span>
         </div>
       }
 
