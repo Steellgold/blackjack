@@ -1,4 +1,5 @@
 import type { Card } from "./card.types";
+import type { ChipValue } from "./chip.types";
 import type { EventResponse, TableCreatedResponse, TableJoinableResponse, TableJoinedResponse, TableStartResponse } from "./responses.types";
 
 export type GameStatus = 
@@ -54,4 +55,7 @@ export type BlackjackState = GameState & {
   startGame: (tableId: string) => Promise<EventResponse<TableStartResponse>>; // Start the game
 
   setGameStatus: (status: GameStatus) => void; // Set game status
+
+  addBet: (amount: ChipValue) => void; // Add a bet
+  removeBet: () => void; // Remove the last bet
 };
