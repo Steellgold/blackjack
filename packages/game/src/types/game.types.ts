@@ -18,6 +18,13 @@ export type PlayerStatus =
   "STAND" | // Player has chosen to stand
   "HIT" | // Player has chosen to hit
   "BUST" | // Player has busted
+  "PUSH" | // Player has a push
+
+  // TEMPORARY
+  "WIN" | // Player has won
+  "LOSE" | // Player has lost
+  // TEMPORARY
+
   "BLACKJACK"; // Player has blackjack
 
 export type Player = {
