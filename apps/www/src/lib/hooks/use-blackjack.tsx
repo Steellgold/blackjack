@@ -81,6 +81,20 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
       }
     });
 
+    socket.on("cards-updated", ({ cards, recipient }) => {
+      if (recipient === "DEALER") {
+        setCards(cards);
+      } else {
+        setPlayers(prevPlayers => 
+          prevPlayers.map(player => 
+            player.id === recipient 
+              ? { ...player, cards }
+              : player
+          )
+        );
+      }
+    });
+
     socket.on("game-status-changed", (status) => {
       console.log("Game status:", gameStatus);
       console.log("Game status received:", status);
