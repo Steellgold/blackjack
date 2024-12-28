@@ -46,6 +46,7 @@ export const getHandValue = (cards: Card[]): number => {
   let aces = 0;
 
   for (const card of cards) {
+    if (card.isHidden) continue;
     if (card.rank === "A") {
       aces += 1;
       value += 11;
