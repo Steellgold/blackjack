@@ -3,14 +3,13 @@ import type { EventExecute } from "../manager/event.manager";
 import { MAX_PLAYERS, tables } from "../data";
 import { createDeck } from "@blackjack/game/utils";
 import type { GameState } from "@blackjack/game/types";
+import { sleep } from "../utils";
 
 export const name = "start-game";
 
 type StartData = {
   tableId: string;
 };
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const distributeInitialCards = async (table: GameState, io: Server) => {
   const dealerCard1 = table.deck.pop();
@@ -106,6 +105,7 @@ export const execute: EventExecute<StartData> = async (io: Server, socket: Socke
         table.players.forEach((player) => player.status = "NOT_CHOSEN");
 
         io.to(tableId).emit("game-status-changed", table.gameStatus);
+        io.to(tableId).emit("players-update", table.players);
       });
     }
   }, 1000);
