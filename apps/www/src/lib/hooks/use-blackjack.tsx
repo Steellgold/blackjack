@@ -1,6 +1,6 @@
 "use client";
 
-import { type TableStartResponse, type BlackjackState, type Card, type EventResponse, type GameStatus, type Player, type TableCreatedResponse, type TableJoinableResponse, type TableJoinedResponse, type ChipValue, type TableBetResponse } from "@blackjack/game/types";
+import type { TableStartResponse, BlackjackState, Card, EventResponse, GameStatus, Player, TableCreatedResponse, TableJoinableResponse, TableJoinedResponse, ChipValue, TableBetResponse } from "@blackjack/game/types";
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
@@ -202,6 +202,46 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
     });
   };
 
+  const hit = async () => {
+    return new Promise<EventResponse<void>>((resolve, reject) => {
+      if (!tableId || !socket) {
+        reject({ success: false, error: "No table or socket connection" });
+        return;
+      }
+  
+      socket.emit("action", { 
+        tableId, 
+        action: "HIT" 
+      }, (response: EventResponse<void>) => {
+        if (response.success) {
+          resolve(response);
+        } else {
+          reject(response);
+        }
+      });
+    });
+  };
+  
+  const stand = async () => {
+    return new Promise<EventResponse<void>>((resolve, reject) => {
+      if (!tableId || !socket) {
+        reject({ success: false, error: "No table or socket connection" });
+        return;
+      }
+  
+      socket.emit("action", { 
+        tableId, 
+        action: "STAND" 
+      }, (response: EventResponse<void>) => {
+        if (response.success) {
+          resolve(response);
+        } else {
+          reject(response);
+        }
+      });
+    });
+  };
+
   const value: BlackjackState = {
     isSolo: false, // TODO: Implement single player mode (Just auto-launch the process when the player joins)
     id: socket?.id ?? "", // Socket ID
@@ -227,6 +267,9 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
 
     cards,
     deck,
+
+    hit,
+    stand
   };
 
   return (

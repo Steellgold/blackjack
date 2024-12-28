@@ -5,6 +5,7 @@ import { BlackjackView } from "../_components/blackjack.view";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/lib/hooks/use-lang";
 import { useBlackjack } from "@/lib/hooks/use-blackjack";
+import { BlackjackButton } from "@/lib/components/ui/blackjack/blackjack-button";
 
 export const WaitingPlayerChoices = () => {
   const { lang } = useLang();
@@ -14,35 +15,56 @@ export const WaitingPlayerChoices = () => {
   if (!player) return null;
 
   const isSelected = () => player.status == "HIT" || player.status == "STAND";
+  const isBust = player.status == "BUST";
+
+  const handleHit = async () => {
+    try {
+      await hit();
+    } catch (error) {
+      console.error("Error hitting:", error);
+    }
+  };
+
+  const handleStand = async () => {
+    try {
+      await stand();
+    } catch (error) {
+      console.error("Error standing:", error);
+    }
+  }
 
   return (
     <BlackjackView>
       <BlackjackCard>
         <p className="text-center text-md bg-opacity-10 p-2 rounded-md bg-black text-white mb-2">
-          {lang == "fr" ? "Que voulez-vous faire ?" : "Make your choice"}
+          {!isBust ? (
+            <>{lang == "fr" ? "Que voulez-vous faire ?" : "Make your choice"}</>
+          ) : (
+            <>{lang == "fr" ? "Hors jeu !" : "Bust!"}</>
+          )}
         </p>
 
         <div className="flex flex-row justify-center gap-1.5">
           {[0, 1].map((choice) => (
-            <div
+            <BlackjackButton
               className={cn(
                 "relative group overflow-hidden",
                 "w-24 h-20 flex justify-center items-center",
                 "transition-all",
-                "rounded cursor-pointer",
+                "rounded cursor-pointer border-2",
                 "font-semibold text-1xl",
+                "disabled:opacity-50 disabled:cursor-not-allowed",
                 "hover:bg-opacity-70", {
                   "bg-green-500 bg-opacity-30 border-2 border-green-500 text-white": choice == 0,
                   "bg-red-500 bg-opacity-30 border-2 border-red-500 text-white": choice == 1,
 
                   "hover:text-6xl": choice == 0 && lang == "en" && !isSelected(),
                   "hover:text-4xl": (choice == 1 && lang == "en" || choice == 0 && lang == "fr") && !isSelected(),
-                  "hover:text-3xl": choice == 1 && lang == "fr" && !isSelected(),
-
-                  // DISABLED
-                  "opacity-50 cursor-not-allowed": isSelected()
+                  "hover:text-3xl": choice == 1 && lang == "fr" && !isSelected()
                 }
               )}
+              onClick={choice == 0 ? handleHit : handleStand}
+              disabled={isSelected() || isBust}
               key={choice}
             >
               <div className={
@@ -61,7 +83,7 @@ export const WaitingPlayerChoices = () => {
                   </p>
                 ))}
               </div>
-            </div>
+            </BlackjackButton>
           ))}
         </div>
       </BlackjackCard>
