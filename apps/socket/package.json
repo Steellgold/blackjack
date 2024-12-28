@@ -1,7 +1,7 @@
 {
   "name": "@blackjack/socket",
   "scripts": {
-    "dev": "tsx ./src/index.ts --watch --noEmit",
+    "dev": "nodemon --exec tsx ./src/index.ts --watch src",
     "start": "tsx --no-warnings ./src/index.ts"
   },
   "dependencies": {
@@ -10,5 +10,8 @@
     "nanoid": "^5.0.9",
     "socket.io": "^4.8.1",
     "tsx": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }
