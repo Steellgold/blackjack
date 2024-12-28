@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import type { EventExecute } from "../manager/event.manager";
 import { tables } from "../data";
-import type { GameState } from "@blackjack/game/types";
+import type { Card, GameState } from "@blackjack/game/types";
 import { drawCard, getHandValue } from "@blackjack/game/utils";
 import { sleep } from "../utils";
 
@@ -16,7 +16,7 @@ type ActionData = {
 
 const checkAllPlayersChosen = (io: Server, table: GameState) => {
   const tableId = table.tableId;
-  if (!tableId) return;
+  if (!tableId || !table.players || !table.deck || !table.cards) return;
 
   const allPlayersChosen = table.players.every(p => p.status !== "NOT_CHOSEN");
   if (allPlayersChosen) {
@@ -43,12 +43,88 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
       io.to(tableId).emit("players-update", table.players);
     }
 
-    for (const player of standingPlayers) {
-      player.status = "NOT_CHOSEN";
-    }
-
     io.to(tableId).emit("players-update", table.players);
     io.to(tableId).emit("game-status-changed", "WAITING_FOR_PLAYER_CHOICES");
+
+    if (standingPlayers.length + hittingPlayers.length === table.players.length) {
+      console.log("All players have chosen");
+      table.gameStatus = "WAITING_FOR_DEALER";
+      io.to(tableId).emit("game-status-changed", table.gameStatus);
+
+      const dealerHand = table.cards;
+      if (dealerHand[1]) {
+        dealerHand[1].isHidden = false;
+      }
+
+      io.to(tableId).emit("cards-updated", {
+        recipient: "DEALER",
+        cards: dealerHand
+      });
+
+      let dealerHandValue = getHandValue(dealerHand);
+      let canReset = false;
+
+      if (dealerHandValue < 17) {
+        while (dealerHandValue < 17) {
+          const card = drawCard(table.deck);
+          if (!card) return; // No more cards (never happen but just in case)
+          io.to(tableId).emit("deck-updated", table.deck);
+          dealerHand.push({ ...card, owner: "DEALER", isHidden: false });
+          io.to(tableId).emit("card-distributed", { card, recipient: "DEALER" });
+
+          dealerHandValue = getHandValue(dealerHand);
+          if (dealerHandValue >= 17) canReset = true;
+
+          sleep(1000);
+          io.to(tableId).emit("cards-updated", {
+            recipient: "DEALER",
+            cards: dealerHand
+          });
+        }
+      } else {
+        canReset = true;
+      }
+
+      if  (canReset) {
+        console.log("Dealer hand value:", dealerHandValue);
+
+        if (dealerHandValue > 21) {
+          table.players.forEach(player => {
+            if (player.status === "BUST") return;
+            player.status = "WIN";
+          });
+        } else {
+          table.players.forEach(player => {
+            if (player.status === "BUST") return;
+            const playerHandValue = getHandValue(player.cards);
+            if (playerHandValue === 21 && player.cards.length === 2) {
+              player.status = "BLACKJACK";
+            } else if (playerHandValue > dealerHandValue) {
+              player.status = "WIN";
+            } else if (playerHandValue < dealerHandValue) {
+              player.status = "LOSE";
+            } else {
+              player.status = "PUSH";
+            }
+          });
+        }
+
+        setTimeout(() => {
+          table.deck = [];
+          table.cards = [];
+          table.players.forEach(player => {
+            player.cards = [];
+            player.status = "NOT_BETTED";
+          });
+          table.gameStatus = "WAITING_FOR_BETS";
+  
+          io.to(tableId).emit("deck-updated", table.deck);
+          io.to(tableId).emit("cards-updated", { recipient: "DEALER", cards: table.cards });
+          io.to(tableId).emit("players-update", table.players);
+          io.to(tableId).emit("game-status-changed", table.gameStatus);
+        }, 5000);
+      }
+    }
   }
 };
 

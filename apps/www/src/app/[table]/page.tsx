@@ -12,6 +12,7 @@ const TablePage = () => {
   if (gameStatus == "WAITING_FOR_PLAYERS") return <WaitingPlayers />;
   if (gameStatus == "WAITING_FOR_BETS") return <WaitingBetting />;
   if (gameStatus == "WAITING_FOR_DISTRIBUTES") return <BlackjackView />;
+  if (gameStatus == "WAITING_FOR_DEALER") return <BlackjackView />;
   if (gameStatus == "WAITING_FOR_PLAYER_CHOICES") return <WaitingPlayerChoices />;
   
   return <p>Unknown game status: {gameStatus}</p>;

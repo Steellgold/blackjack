@@ -82,7 +82,7 @@ export const execute: EventExecute<StartData> = async (io: Server, socket: Socke
   table.gameStatus = "WAITING_FOR_BETS";
   io.to(tableId).emit("game-status-changed", table.gameStatus);
 
-  table.bettingTimer = 10;
+  table.bettingTimer = 2;
   io.to(tableId).emit("betting-timer", table.bettingTimer);
 
   const interval = setInterval(() => {
