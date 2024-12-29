@@ -78,7 +78,7 @@ export const WaitingPlayerChoices = () => {
                     "opacity-0": i % 2 == 0,
                     "group-hover:opacity-35": i % 2 == 0 && !isSelected(),
                     "group-hover:font-black": i % 2 == 1 && !isSelected()
-                  })}>
+                  })} key={i}>
                     {choice == 0 ? lang == "fr" ? "Tirer" : "Hit" : lang == "fr" ? "Rester" : "Stand"}
                   </p>
                 ))}
