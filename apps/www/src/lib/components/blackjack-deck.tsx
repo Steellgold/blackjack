@@ -23,7 +23,7 @@ export const BlackjackDeck = () => {
               zIndex: index,
             }}
           >
-            <BlackjackCard rank={card.rank} suit={card.suit} isHidden isReloadCard={card.isReloadCard} />
+            <BlackjackCard rank={card.rank} suit={card.suit} isHidden />
           </div>
         )) : (
           <EmptyBlackjackCard />
