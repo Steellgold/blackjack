@@ -57,7 +57,7 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
       <div className="absolute bottom-0 right-0 p-2 flex flex-row gap-1.5">
         <div className="flex flex-col justify-end gap-1">
           <UIBlackjackCard>
-            <p className="text-center">{baseBalance}{lang == "fr" ? "€" : "$"}</p>
+            <p className="text-center">{player.balance}{lang == "fr" ? "€" : "$"}</p>
           </UIBlackjackCard>
           <UIBlackjackCard>
             <BlackjackBets />

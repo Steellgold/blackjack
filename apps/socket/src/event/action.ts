@@ -102,16 +102,21 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
           io.to(tableId).emit("players-update", table.players);
         } else {
           table.players.forEach(player => {
+            const bet = player.bets.reduce((acc, curr) => acc + curr, 0);
+
             if (player.status === "BUST") return;
             const playerHandValue = getHandValue(player.cards);
             if (playerHandValue === 21 && player.cards.length === 2) {
               player.status = "BLACKJACK";
+              player.balance += bet * 2.5;
             } else if (playerHandValue > dealerHandValue) {
               player.status = "WIN";
+              player.balance += bet * 2;
             } else if (playerHandValue < dealerHandValue) {
               player.status = "LOSE";
             } else {
               player.status = "PUSH";
+              player.balance += bet;
             }
           });
 
@@ -128,11 +133,12 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
           if (timer <= 0) {
             clearInterval(interval);
 
-            table.deck = [];
+            // table.deck = [];
             table.cards = [];
             table.players.forEach(player => {
               player.cards = [];
               player.status = "NOT_BETTED";
+              player.bets = [];
             });
             table.gameStatus = "WAITING_FOR_BETS";
 

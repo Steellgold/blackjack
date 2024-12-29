@@ -96,7 +96,7 @@ export const execute: EventExecute<StartData> = async (io: Server, socket: Socke
       });
 
       clearInterval(interval);
-      table.deck = createDeck();
+      if (table.deck.length < 20) table.deck = createDeck();
       table.gameStatus = "WAITING_FOR_DISTRIBUTES";
       io.to(tableId).emit("game-status-changed", table.gameStatus);
 

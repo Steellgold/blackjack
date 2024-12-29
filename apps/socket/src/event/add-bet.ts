@@ -31,7 +31,12 @@ export const execute: EventExecute<AddBetData> = async (io: Server, socket: Sock
     return callback({ success: false, error: "Player not found" });
   }
 
+  if (player.balance < amount) {
+    return callback({ success: false, error: "Insufficient balance" });
+  }
+
   player.bets.push(amount);
+  player.balance -= amount;
   player.status = "BETTING";
 
   io.to(tableId).emit("players-update", table.players);

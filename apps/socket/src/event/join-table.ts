@@ -29,7 +29,8 @@ export const execute: EventExecute<JoinTableData> = async (io: Server, socket: S
     name: playerName,
     cards: [],
     bets: [],
-    status: "WAITING"
+    status: "WAITING",
+    balance: table.baseBalance
   });
 
   socket.join(tableId);

@@ -12,7 +12,7 @@ import type { Component } from "./utils/component";
 import { toast } from "sonner";
 
 export const BlackjackBet = () => {
-  const { gameStatus, bettingTimer, removeBet, players, id } = useBlackjack();
+  const { bettingTimer, removeBet, players, id } = useBlackjack();
   const { lang } = useLang();
   const [removeError, setRemoveError] = useState(false);
 
@@ -81,13 +81,12 @@ export const BlackjackChip: Component<BlackjackChipProps> = ({ value, empiled, m
   const { addBet, players, id } = useBlackjack();
   const [isError, setIsError] = useState(false);
 
-  const balance = 1000;
   const player = players.find(player => player.id === id);
   if (!player) return <p className="bg-red-500 p-3">Player not found</p>;
 
   const handleBet = async () => {
     if (empiled) return;
-    if (value > balance) return;
+    if (value > player.balance) return;
     
     try {
       await addBet(value);
@@ -117,7 +116,7 @@ export const BlackjackChip: Component<BlackjackChipProps> = ({ value, empiled, m
           "bg-purple-500 text-white border-purple-300": value === 1000,
 
           // Sizes & Opacity
-          "opacity-50": balance < value && !empiled,
+          "opacity-50": player.balance < value && !empiled,
           "w-10 h-10 border-4": mini,
           "w-10 h-10 sm:w-14 sm:h-14 border-[6px]": !mini,
 

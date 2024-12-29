@@ -32,7 +32,9 @@ export type Player = {
   name: string; // Player name
 
   cards: Card[]; // Player's cards
+
   bets: number[]; // Player's bets (in [] to be can cancel easily)
+  balance: number; // Player's balance
 
   status: PlayerStatus;
 };

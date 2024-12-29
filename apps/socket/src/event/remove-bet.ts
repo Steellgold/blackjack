@@ -33,7 +33,8 @@ export const execute: EventExecute<RemoveBetData> = async (io: Server, socket: S
     return callback({ success: false, error: "No bets to remove" });
   }
 
-  player.bets.pop();
+  const bet = player.bets.pop();
+  player.balance += bet || 0;
   
   if (player.bets.length === 0) {
     player.status = "BETTING";
