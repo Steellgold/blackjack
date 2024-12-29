@@ -6,6 +6,8 @@
   },
   "dependencies": {
     "@blackjack/game": "workspace:*",
+    "@fastify/static": "^8.0.3",
+    "express": "^4.21.2",
     "fastify": "^5.2.0",
     "nanoid": "^5.0.9",
     "socket.io": "^4.8.1",
