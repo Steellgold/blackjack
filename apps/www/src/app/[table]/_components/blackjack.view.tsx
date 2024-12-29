@@ -1,5 +1,3 @@
-"use client";
-
 import { BlackjackBets } from "@/lib/components/blackjack-bet";
 import { BlackjackCardsStack } from "@/lib/components/blackjack-card";
 import { BlackjackCard as UIBlackjackCard } from "@/lib/components/ui/blackjack/blackjack-card";
@@ -16,7 +14,6 @@ import { useMediaQuery } from "usehooks-ts";
 
 export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
   const isMobile = useMediaQuery("(max-width: 640px)");
-
   const { players, cards: dealerCards, id, deck, gameStatus, baseBalance } = useBlackjack();
   const { lang } = useLang();
 
@@ -26,16 +23,32 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
   const dealerHandValue = getHandValue(dealerCards);
   const playerHandValue = getHandValue(player.cards);
 
-
   return (
-    <div className="h-screen flex flex-col items-center justify-between p-3">
+    <div className={cn("h-screen flex flex-col items-center justify-between", {
+      "p-3": !isMobile,
+      "p-3 max-h-screen": isMobile
+    })}>
       <div className="flex flex-col gap-0.5">
-        <UIBlackjackCard variant={dealerHandValue > 21 ? "destructive" : "default"} connected={dealerHandValue > 0 ? "to-bottom" : false}>
+        <UIBlackjackCard 
+          variant={dealerHandValue > 21 ? "destructive" : "default"} 
+          connected={dealerHandValue > 0 ? "to-bottom" : false}
+          className={cn({
+            "p-2": isMobile,
+            "p-4": !isMobile
+          })}
+        >
           <BlackjackCardsStack cards={dealerCards} playerId="DEALER" />
         </UIBlackjackCard>
 
         {dealerHandValue > 0 && (
-          <UIBlackjackCard className="py-1 text-center" connected="to-top" variant={dealerHandValue > 21 ? "destructive" : "default"}>
+          <UIBlackjackCard 
+            className={cn("text-center", {
+              "py-0.5 text-sm": isMobile,
+              "py-1": !isMobile
+            })} 
+            connected="to-top" 
+            variant={dealerHandValue > 21 ? "destructive" : "default"}
+          >
             Total: <span className="font-bold">{dealerHandValue}</span>
           </UIBlackjackCard>
         )}
@@ -45,23 +58,41 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
 
       {children}
       
-      <div className="flex flex-wrap gap-11">
+      <div className={cn("flex flex-wrap", {
+        "gap-2": isMobile,
+        "gap-11": !isMobile
+      })}>
         <div className="flex flex-col gap-0.5">
           {playerHandValue > 0 && (
-            <UIBlackjackCard className="py-1 text-center" connected="to-bottom" variant={playerHandValue > 21 ? "destructive" : "default"}>
+            <UIBlackjackCard 
+              className={cn("text-center", {
+                "py-0.5 text-sm": isMobile,
+                "py-1": !isMobile
+              })}
+              connected="to-bottom" 
+              variant={playerHandValue > 21 ? "destructive" : "default"}
+            >
               Total: <span className="font-bold">{playerHandValue}</span>
             </UIBlackjackCard>
           )}
 
-          <UIBlackjackCard key={player.id} variant={playerHandValue > 21 ? "destructive" : "default"} connected={playerHandValue > 0 ? "to-top" : false}>
+          <UIBlackjackCard 
+            key={player.id} 
+            variant={playerHandValue > 21 ? "destructive" : "default"} 
+            connected={playerHandValue > 0 ? "to-top" : false}
+            className={cn({
+              "p-2": isMobile,
+              "p-4": !isMobile
+            })}
+          >
             <BlackjackCardsStack cards={player.cards} playerId={player.id} />
           </UIBlackjackCard>
         </div>
       </div>
 
-      <div className={cn("absolute bottom-0 p-3 flex flex-row gap-1.5", {
-        "left-0": isMobile,
-        "right-0": !isMobile
+      <div className={cn("absolute bottom-0 flex flex-row", {
+        "left-0 p-3 gap-0.5": isMobile,
+        "right-0 p-3 gap-1.5": !isMobile
       })}>
         <div className="flex flex-col justify-end gap-1">
           <UIBlackjackCard>
@@ -72,10 +103,12 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
           </UIBlackjackCard>
         </div>
 
-        <BlackjackDeck  />
+        <BlackjackDeck />
       </div>
 
       <OtherPlayersCardsCard />
     </div>
-  )
+  );
 }
+
+export default BlackjackView;
