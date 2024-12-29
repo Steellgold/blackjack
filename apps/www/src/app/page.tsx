@@ -29,9 +29,7 @@ const Page = () => {
 
   const router = useRouter();
 
-  const avatar = createAvatar(dylan, { seed: playerName || "Joueur" }).toDataUri();
-
-  const handleTable = async(type: "create" | "join") => {
+  const handleTable = async(type: "create" | "join" | "create-solo") => {
     if (playerName === "") {
       toast.error(lang === "fr" ? "Vous devez entrer un nom pour continuer." : "You must enter a name to continue.");
       return;
@@ -41,6 +39,15 @@ const Page = () => {
       const data = await createTable({
         expectedPlayers,
         baseBalance: parseInt(balance)
+      });
+      if (data.success && data.data?.tableId) {
+        joinTable(playerName, data.data.tableId);
+        router.push(`/${data.data.tableId}`);
+      };
+    } else if (type === "create-solo") {
+      const data = await createTable({
+        expectedPlayers: 1,
+        baseBalance: 100
       });
       if (data.success && data.data?.tableId) {
         joinTable(playerName, data.data.tableId);
@@ -72,8 +79,8 @@ const Page = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <BlackjackButton size="small">
-              {lang === "fr" ? "Jouer contre l'ordinateur" : "Play against the computer"}
+            <BlackjackButton size="small" onClick={() => handleTable("create-solo")}>
+              {lang === "fr" ? "Jouer tout seul" : "Play alone"}
             </BlackjackButton>
           </div>
         </BlackjackCard>
