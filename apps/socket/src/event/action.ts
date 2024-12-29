@@ -46,7 +46,7 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
     io.to(tableId).emit("players-update", table.players);
     io.to(tableId).emit("game-status-changed", "WAITING_FOR_PLAYER_CHOICES");
 
-    if (standingPlayers.length === table.players.length) {
+    if (standingPlayers.length + table.players.filter(p => p.status === "BUST").length === table.players.length) {
       console.log("All players have chosen");
       table.gameStatus = "WAITING_FOR_DEALER";
       io.to(tableId).emit("game-status-changed", table.gameStatus);
@@ -56,6 +56,7 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
         dealerHand[1].isHidden = false;
       }
 
+      sleep(1000);
       io.to(tableId).emit("cards-updated", {
         recipient: "DEALER",
         cards: dealerHand
@@ -71,11 +72,14 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
           io.to(tableId).emit("deck-updated", table.deck);
           dealerHand.push({ ...card, owner: "DEALER", isHidden: false });
           io.to(tableId).emit("card-distributed", { card, recipient: "DEALER" });
+          sleep(1000, false);
 
           dealerHandValue = getHandValue(dealerHand);
-          if (dealerHandValue >= 17) canReset = true;
+          if (dealerHandValue >= 17){
+            canReset = true;
+            console.log("Dealer hand value is 17 or more");
+          }
 
-          sleep(1000);
           io.to(tableId).emit("cards-updated", {
             recipient: "DEALER",
             cards: dealerHand
@@ -83,9 +87,10 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
         }
       } else {
         canReset = true;
+        console.log("Can reset without drawing more cards");
       }
 
-      if  (canReset) {
+      if (canReset) {
         console.log("Dealer hand value:", dealerHandValue);
 
         if (dealerHandValue > 21) {
@@ -93,6 +98,8 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
             if (player.status === "BUST") return;
             player.status = "WIN";
           });
+
+          io.to(tableId).emit("players-update", table.players);
         } else {
           table.players.forEach(player => {
             if (player.status === "BUST") return;
@@ -107,6 +114,8 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
               player.status = "PUSH";
             }
           });
+
+          io.to(tableId).emit("players-update", table.players);
         }
 
         setTimeout(() => {

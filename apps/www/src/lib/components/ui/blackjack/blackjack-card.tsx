@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { type PropsWithChildren } from "react";
 import type { Component } from "../../utils/component";
 
 export type BlackjackCardVariant = "default" | "destructive" | "success" | "warning"; 

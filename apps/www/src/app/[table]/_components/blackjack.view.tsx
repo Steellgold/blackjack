@@ -8,12 +8,13 @@ import { useBlackjack } from "@/lib/hooks/use-blackjack";
 import { getHandValue } from "@blackjack/game/utils";
 import type { PropsWithChildren } from "react";
 import OtherPlayersCardsCard from "./other-players-cards";
-import { cn } from "@/lib/utils";
-import { BlackjackBadge } from "@/lib/components/ui/blackjack/blackjack-badge";
 import { BlackjackDeck } from "@/lib/components/blackjack-deck";
+import { useLang } from "@/lib/hooks/use-lang";
+import { EndedGameStatues } from "./statues.endgame";
 
 export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
-  const { players, cards: dealerCards, id, deck } = useBlackjack();
+  const { players, cards: dealerCards, id, deck, gameStatus, baseBalance } = useBlackjack();
+  const { lang } = useLang();
 
   const player = players.find(player => player.id === id);
   if (!player) return <div className="bg-red-500">Player not found !</div>;
@@ -34,7 +35,9 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
           </UIBlackjackCard>
         )}
       </div>
-      
+
+      <EndedGameStatues />
+
       {children}
       
       <div className="flex flex-wrap gap-11">
@@ -52,7 +55,10 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
       </div>
 
       <div className="absolute bottom-0 right-0 p-2 flex flex-row gap-1.5">
-        <div className="flex flex-col justify-end gap-0.5">
+        <div className="flex flex-col justify-end gap-1">
+          <UIBlackjackCard>
+            <p className="text-center">{baseBalance}{lang == "fr" ? "€" : "$"}</p>
+          </UIBlackjackCard>
           <UIBlackjackCard>
             <BlackjackBets />
           </UIBlackjackCard>
