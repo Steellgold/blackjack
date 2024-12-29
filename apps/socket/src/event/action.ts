@@ -46,7 +46,7 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
     io.to(tableId).emit("players-update", table.players);
     io.to(tableId).emit("game-status-changed", "WAITING_FOR_PLAYER_CHOICES");
 
-    if (standingPlayers.length + hittingPlayers.length === table.players.length) {
+    if (standingPlayers.length === table.players.length) {
       console.log("All players have chosen");
       table.gameStatus = "WAITING_FOR_DEALER";
       io.to(tableId).emit("game-status-changed", table.gameStatus);
