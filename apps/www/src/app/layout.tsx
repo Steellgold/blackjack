@@ -7,6 +7,8 @@ import { BlackjackButtons } from "@/lib/components/blackjack-menu";
 import type { PropsWithChildren } from "react";
 import type { Component } from "@/lib/components/utils/component";
 import { BlackjackProvider } from "@/lib/hooks/use-blackjack";
+import { cn } from "@/lib/utils";
+import { ThemeWrapper } from "@/lib/components/theme-wrapper";
 
 const monterserrat = Montserrat({ subsets: ["latin"] });
 
@@ -48,24 +50,27 @@ export const viewport: Viewport = {
   themeColor: "#17552f"
 };
 
-const Layout: Component<PropsWithChildren> = ({ children }) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
-      <body className={`rounded-lg ${monterserrat.className} antialiased bg-green-900 dark:bg-green-950`}>        
-        <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
-          <div className="flex items-center justify-center h-screen relative text-white">
-            <BlackjackButtons />
-            
-            <Toaster richColors />
-
-            <BlackjackProvider>
-              {children}
-            </BlackjackProvider>
-          </div>
+      <body className={cn(
+        monterserrat.className,
+        "antialiased relative h-screen"
+      )}>        
+        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+          <ThemeWrapper>
+            <div className="flex items-center justify-center h-screen relative text-white">
+              <BlackjackButtons />
+              <Toaster richColors />
+              <BlackjackProvider>
+                {children}
+              </BlackjackProvider>
+            </div>
+          </ThemeWrapper>
         </ThemeProvider>
       </body>
     </html>
   );
-}
+};
 
 export default Layout;

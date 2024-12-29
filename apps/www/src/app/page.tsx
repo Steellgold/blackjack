@@ -162,13 +162,6 @@ const Page = () => {
                   onChange={(e) => setBalance(e.target.value)}
                   className="w-full"
                 />
-
-                {/* <BlackjackInput
-                  inputSize="small"
-                  placeholder={lang === "fr" ? "Mot de passe" : "Password"}
-                  label={lang === "fr" ? "Mot de passe" : "Password"}
-                  className="w-full"
-                /> */}
               </BlackjackCard>
 
               <DialogFooter className="flex flex-col sm:flex-row justify-end w-full mt-3 gap-2">
@@ -193,7 +186,7 @@ const Page = () => {
         <span className="text-sm text-center mb-1 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2">
           <div>
             {lang === "fr" ? "Développé par" : "Developed by"}{" "}
-            <Link className="text-green-500 hover:underline" href="https://x.com/Steellgold" target="_blank">
+            <Link className="text-amber-300 hover:underline" href="https://x.com/Steellgold" target="_blank">
               Gaëtan
             </Link>
           </div>
@@ -202,7 +195,7 @@ const Page = () => {
 
           <Link
             className={cn(
-              "text-green-500 hover:underline",
+              "text-amber-300 hover:underline",
               "flex items-center justify-center gap-1"
             )}
             href="https://github.com/Steellgold/blackjack"

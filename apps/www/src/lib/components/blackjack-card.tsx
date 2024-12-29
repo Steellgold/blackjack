@@ -25,21 +25,20 @@ type BlackjackCardProps = Card & {
   cancelAnimation?: boolean;
 }
 
-export const BlackjackCard: Component<BlackjackCardProps> = ({ rank, suit, owner, isHidden, isReloadCard, cancelAnimation, isStackedLast }) => {
+export const BlackjackCard: Component<BlackjackCardProps> = ({ rank, suit, owner, isHidden, cancelAnimation, isStackedLast }) => {
   return (
     <div className={cn(
       "relative bg-[#f5f7f6] rounded-md border-2 transition-transform duration-300 ease-in-out",
       "w-20 h-28 sm:w-24 sm:h-36",
       {
         "shadow-md": !isHidden,
-        "bg-red-600 border-red-500": isReloadCard,
-        "bg-blue-50 border-blue-100": isHidden && !isReloadCard,
+        "bg-blue-50 border-blue-100": isHidden,
         "transition-transform duration-300 ease-in-out": !isStackedLast && !isHidden,
         "hover:translate-y-[-5rem] hover:-rotate-12": !isStackedLast && !isHidden && owner === "PLAYER" && !cancelAnimation,
         "hover:translate-y-[5rem] hover:rotate-12": !isStackedLast && !isHidden && owner === "DEALER" && !cancelAnimation,
       }
     )}>
-      {rank && !isHidden && !isReloadCard &&
+      {rank && !isHidden &&
         <div className={cn({
           "text-[#e04f4f]": ["Hearts", "Diamonds"].includes(suit),
           "text-black": ["Clubs", "Spades"].includes(suit)
@@ -52,30 +51,16 @@ export const BlackjackCard: Component<BlackjackCardProps> = ({ rank, suit, owner
       }
 
       {/* CENTERED */}
-      {isHidden || isReloadCard ? (
+      {isHidden ? (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-0.5">
           <div className="flex flex-row gap-0.5">
-            <Heart size={16} className={cn({
-              "fill-[#bfdbfe] stroke-inherit": isHidden,
-              "fill-red-800 stroke-inherit": isReloadCard
-            })} />
-            
-            <Spade size={16} className={cn({
-              "fill-[#a2bcdb] stroke-inherit": isHidden,
-              "fill-red-700 stroke-inherit": isReloadCard
-            })} />
+            <Heart size={16} className={"fill-[#bfdbfe] stroke-inherit"} />
+            <Spade size={16} className={"fill-[#a2bcdb] stroke-inherit"} />
           </div>
 
           <div className="flex flex-row gap-0.5">
-            <Club size={16} className={cn({
-              "fill-[#a2bcdb] stroke-inherit": isHidden,
-              "fill-red-700 stroke-inherit": isReloadCard
-            })} />
-
-            <Diamond size={16} className={cn({
-              "fill-[#bfdbfe] stroke-inherit": isHidden,
-              "fill-red-800 stroke-inherit": isReloadCard
-            })} />
+            <Club size={16} className={"fill-[#a2bcdb] stroke-inherit"} />
+            <Diamond size={16} className={"fill-[#bfdbfe] stroke-inherit"} />
           </div>
         </div>
       ) : (

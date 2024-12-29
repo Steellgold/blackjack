@@ -1,8 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/lib/components/ui/dialog";
-import { Moon, Pen, RefreshCcw, Sun, User } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Pen, RefreshCcw, User } from "lucide-react";
 import { useLang } from "@/lib/hooks/use-lang";
 import { useEffect, useState, type ReactElement } from "react";
 import { BlackjackButton } from "./ui/blackjack/blackjack-button";
@@ -13,8 +12,9 @@ import { dylan } from "@dicebear/collection";
 import { toast } from "sonner";
 import { BlackjackInput } from "./ui/blackjack/blackjack-input";
 import { generateName } from "just-random-names";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { useMediaQuery } from "usehooks-ts";
+import { TableThemeDialog } from "./table-theme-selector";
 
 export const BlackjackButtons = (): ReactElement => {
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -37,7 +37,7 @@ export const BlackjackButtons = (): ReactElement => {
         </SheetTrigger>
         <SheetContent side={"top"} showCloseButton={false} className="p-2">
           <div className="w-full">
-          <ProfileCard />
+            <ProfileCard />
           </div>
         </SheetContent>
       </Sheet>
@@ -46,7 +46,6 @@ export const BlackjackButtons = (): ReactElement => {
 }
 
 const ProfileCard = (): ReactElement => {
-  const { theme, setTheme } = useTheme();
   const { playerName } = usePlayerStore();
 
   const avatar = createAvatar(dylan, { seed: playerName || "Joueur" }).toDataUri();
@@ -61,16 +60,7 @@ const ProfileCard = (): ReactElement => {
         </h1>
 
         <div className="flex flex-row gap-1">
-          <BlackjackButton
-            size="small"
-            className="justify-center bg-white bg-opacity-10 text-white rounded-md px-3 py-2 flex items-center"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            <Sun size={16} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon size={16} className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </BlackjackButton>
-
+          <TableThemeDialog />
           <SwitchLang />
 
           <ChangeNameDialog />
