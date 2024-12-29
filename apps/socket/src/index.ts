@@ -15,25 +15,13 @@ function startServer() {
     prefix: '/' 
   });
 
-  const isProd = process.env.NODE_ENV === 'production';
-  const corsConfig = {
-    origin: isProd ? "https://blackjack.steellgold.fr" : "*",
-    methods: ["GET", "POST"],
-    credentials: true
-  };
-
-  const io = new Server(app.server, { cors: corsConfig });
-
-  if (isProd) {
-    io.use((socket, next) => {
-      const origin = socket.handshake.headers.origin;
-      if (origin === "https://blackjack.steellgold.fr") {
-        next();
-      } else {
-        next(new Error("Unauthorized origin"));
-      }
-    });
-  }
+  const isProduction = process.env.NODE_ENV === "production";
+  const io = new Server(app.server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  });
 
   io.on("connection", (socket) => {
     console.log("✌️ New user connected from:", socket.handshake.headers.origin);
@@ -55,8 +43,7 @@ function startServer() {
 
   app.listen({ port: 3001 })
     .then(() => {
-      console.log("🚀 Server is running on http://localhost:3001");
-      console.log("🔒 CORS mode:", isProd ? "Production (restricted)" : "Development (open)");
+      console.log("🚀 Server is running on " + isProduction ? "http://socket.blackjack.steellgold.fr/" : "http://localhost:3001");
     })
     .catch((err) => {
       app.log.error(err);
