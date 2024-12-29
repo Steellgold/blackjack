@@ -1,1 +1,1 @@
-export const sleep = (ms: number) => setTimeout(() => {}, ms);
+export const sleep = (ms: number, async: boolean = true) => async ? new Promise(resolve => setTimeout(resolve, ms)) : setTimeout(() => {}, ms);
