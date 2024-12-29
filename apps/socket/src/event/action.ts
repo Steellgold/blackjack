@@ -118,25 +118,35 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
           io.to(tableId).emit("players-update", table.players);
         }
 
-        setTimeout(() => {
-          table.deck = [];
-          table.cards = [];
-          table.players.forEach(player => {
-            player.cards = [];
-            player.status = "NOT_BETTED";
-          });
-          table.gameStatus = "WAITING_FOR_BETS";
+        let timer = 5;
+        io.to(tableId).emit("back-to-bets-timer", timer);
 
-          io.to(tableId).emit("deck-updated", table.deck);
-          io.to(tableId).emit("cards-updated", { recipient: "DEALER", cards: table.cards });
-          io.to(tableId).emit("players-update", table.players);
+        const interval = setInterval(() => {
+          timer -= 1;
+          io.to(tableId).emit("back-to-bets-timer", timer);
 
-          table.bettingTimer = 10;
-          io.to(tableId).emit("betting-timer", table.bettingTimer);
-          io.to(tableId).emit("ended", table.tableId);
+          if (timer <= 0) {
+            clearInterval(interval);
 
-          io.to(tableId).emit("game-status-changed", table.gameStatus);
-        }, 5000);
+            table.deck = [];
+            table.cards = [];
+            table.players.forEach(player => {
+              player.cards = [];
+              player.status = "NOT_BETTED";
+            });
+            table.gameStatus = "WAITING_FOR_BETS";
+
+            io.to(tableId).emit("deck-updated", table.deck);
+            io.to(tableId).emit("cards-updated", { recipient: "DEALER", cards: table.cards });
+            io.to(tableId).emit("players-update", table.players);
+
+            table.bettingTimer = 10;
+            io.to(tableId).emit("betting-timer", table.bettingTimer);
+            io.to(tableId).emit("ended", table.tableId);
+
+            io.to(tableId).emit("game-status-changed", table.gameStatus);
+          }
+        }, 1000);
       }
     }
   }

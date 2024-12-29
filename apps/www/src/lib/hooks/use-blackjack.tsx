@@ -30,6 +30,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
   
   const [gameStatus, setGameStatus] = useState<GameStatus>("WAITING_FOR_PLAYERS");
   const [bettingTimer, setBettingTimer] = useState<number>(0);
+  const [backToBetsTimer, setBackToBetsTimer] = useState<number>(0);
 
   useEffect(() => {
     if (!socket) {
@@ -65,6 +66,10 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
 
     socket.on("betting-timer", (timer: number) => {
       setBettingTimer(timer);
+    });
+
+    socket.on("back-to-bets-timer", (timer: number) => {
+      setBackToBetsTimer(timer);
     });
 
     socket.on("card-distributed", ({ card, recipient }) => {
@@ -287,6 +292,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
     setGameStatus,
 
     bettingTimer,
+    backToBetsTimer,
     addBet,
     removeBet,
 

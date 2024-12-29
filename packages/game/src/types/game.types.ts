@@ -42,6 +42,8 @@ export type GameState = {
   expectedPlayers: number; // Expected number of players
   baseBalance: number; // Base balance for each player
 
+  backToBetsTimer: number; // Back to bets timer
+
   tableId: string | null; // Table ID
 
   players: Player[]; // Players in the game

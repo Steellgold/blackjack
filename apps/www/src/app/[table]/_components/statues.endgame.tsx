@@ -6,7 +6,7 @@ import { useLang } from "@/lib/hooks/use-lang";
 import type { ReactElement } from "react";
 
 export const EndedGameStatues = (): ReactElement => {
-  const { gameStatus, players, id } = useBlackjack();
+  const { gameStatus, players, id, backToBetsTimer } = useBlackjack();
   const { lang } = useLang();
 
   const player = players.find(player => player.id === id);
@@ -44,6 +44,11 @@ export const EndedGameStatues = (): ReactElement => {
             {lang === "fr" ? "a été perdue." : "was lost."}
           </span>
         </div>
+
+        <p className="text-xs text-center mt-3">
+          {lang === "fr" ? "Retour aux mises dans " : "Back to bets in "}
+          <span className="font-bold">{backToBetsTimer}s</span>
+        </p>
       </BlackjackCard>
     )
   } else if (["WIN", "BLACKJACK"].includes(player.status)) {
@@ -88,6 +93,11 @@ export const EndedGameStatues = (): ReactElement => {
             }
           </span>
         </div>
+
+        <p className="text-xs text-center mt-3">
+          {lang === "fr" ? "Retour aux mises dans " : "Back to bets in "}
+          <span className="font-bold">{backToBetsTimer}s</span>
+        </p>
       </BlackjackCard>
     )
   } else if (player.status === "PUSH") {
@@ -110,6 +120,11 @@ export const EndedGameStatues = (): ReactElement => {
             {lang === "fr" ? "vous est rendue." : "is returned to you."}
           </span>
         </div>
+
+        <p className="text-xs text-center mt-3">
+          {lang === "fr" ? "Retour aux mises dans " : "Back to bets in "}
+          <span className="font-bold">{backToBetsTimer}s</span>
+        </p>
       </BlackjackCard>
     )
   }
