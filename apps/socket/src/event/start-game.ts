@@ -21,14 +21,7 @@ const DISTRIBUTION_SEQUENCE: CardDistribution[] = [
   { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },  // First round players
   { owner: "DEALER", isHidden: false, recipient: "DEALER" },  // First dealer card
   { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },  // Second round players
-  { owner: "DEALER", isHidden: true, recipient: "DEALER" },    // Second dealer card
-
-  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
-  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
-  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
-  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
-  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
-  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
+  { owner: "DEALER", isHidden: true, recipient: "DEALER" }    // Second dealer card
 ];
 
 const updateTableStatus = (io: Server, tableId: string, table: GameState, status: GameStatus) => {
