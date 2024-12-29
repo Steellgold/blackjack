@@ -64,3 +64,28 @@ export const getHandValue = (cards: Card[]): number => {
 
   return value;
 };
+
+type DrawCardResult = {
+  card: Card | undefined;
+  deck: Card[];
+  deckReset: boolean;
+};
+
+export const drawCardWithReset = (deck: Card[]): DrawCardResult => {
+  const resetThreshold = Math.floor(52 * 0.2);
+  let currentDeck = deck;
+  let deckReset = false;
+
+  if (currentDeck.length <= resetThreshold) {
+    currentDeck = createDeck();
+    deckReset = true;
+  }
+
+  const drawnCard = currentDeck.pop();
+
+  return {
+    card: drawnCard,
+    deck: currentDeck,
+    deckReset
+  };
+};

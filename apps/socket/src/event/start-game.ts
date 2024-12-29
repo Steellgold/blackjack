@@ -1,8 +1,8 @@
 import type { Server, Socket } from "socket.io";
 import type { EventExecute } from "../manager/event.manager";
+import type { GameState, Card, GameStatus } from "@blackjack/game/types";
 import { MAX_PLAYERS, tables } from "../data";
-import { createDeck } from "@blackjack/game/utils";
-import type { GameState } from "@blackjack/game/types";
+import { createDeck, drawCardWithReset } from "@blackjack/game/utils";
 import { sleep } from "../utils";
 
 export const name = "start-game";
@@ -11,58 +11,118 @@ type StartData = {
   tableId: string;
 };
 
+type CardDistribution = {
+  owner: "PLAYER" | "DEALER";
+  isHidden: boolean;
+  recipient: string | "DEALER";
+};
+
+const DISTRIBUTION_SEQUENCE: CardDistribution[] = [
+  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },  // First round players
+  { owner: "DEALER", isHidden: false, recipient: "DEALER" },  // First dealer card
+  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },  // Second round players
+  { owner: "DEALER", isHidden: true, recipient: "DEALER" }    // Second dealer card
+];
+
+const updateTableStatus = (io: Server, tableId: string, table: GameState, status: GameStatus) => {
+  table.gameStatus = status;
+  io.to(tableId).emit("game-status-changed", status);
+};
+
+const distributeCard = async (
+  io: Server,
+  tableId: string,
+  table: GameState,
+  distribution: CardDistribution,
+  playerId?: string
+) => {
+  const result = drawCardWithReset(table.deck);
+  if (result.deckReset) {
+    io.to(tableId).emit("deck-updated", result.deck);
+  }
+  table.deck = result.deck;
+  
+  const card = result.card;
+  if (!card) return false;
+
+  card.owner = distribution.owner;
+  card.isHidden = distribution.isHidden;
+
+  if (distribution.owner === "DEALER") {
+    table.cards.push(card);
+    io.to(tableId).emit("card-distributed", { 
+      card, 
+      recipient: "DEALER" 
+    });
+  } else if (playerId) {
+    const player = table.players.find(p => p.id === playerId);
+    if (player) {
+      player.cards.push(card);
+      io.to(tableId).emit("card-distributed", { 
+        card, 
+        recipient: playerId 
+      });
+    }
+  }
+
+  await sleep(1000);
+  return true;
+};
+
 const distributeInitialCards = async (table: GameState, io: Server) => {
-  const dealerCard1 = table.deck.pop();
-  if (!dealerCard1 || !table.tableId) return; // No more cards (never happen but just in case)
-  io.to(table.tableId).emit("deck-updated", table.deck);
+  const tableId = table.tableId;
+  if (!tableId) return;
 
-  dealerCard1.owner = "DEALER";
-  dealerCard1.isHidden = false;
-  table.cards.push(dealerCard1);
-  io.to(table.tableId).emit("card-distributed", { card: dealerCard1, recipient: "DEALER" });
-  await sleep(1000);
+  for (const distribution of DISTRIBUTION_SEQUENCE) {
+    if (distribution.owner === "PLAYER") {
+      for (const player of table.players) {
+        if (!await distributeCard(io, tableId, table, distribution, player.id)) {
+          return;
+        }
+      }
+    } else {
+      if (!await distributeCard(io, tableId, table, distribution)) {
+        return;
+      }
+    }
+  }
+};
 
-  // First round of player cards
-  for (const player of table.players) {
-    const playerCard = table.deck.pop();
-    if (!playerCard) return; // No more cards (never happen but just in case)
-    io.to(table.tableId).emit("deck-updated", table.deck);
+const startBettingPhase = (table: GameState, io: Server, tableId: string) => {
+  table.bettingTimer = 10;
+  io.to(tableId).emit("betting-timer", table.bettingTimer);
 
-    playerCard.owner = "PLAYER";
-    playerCard.isHidden = false;
-    player.cards.push(playerCard);
-    io.to(table.tableId).emit("card-distributed", { card: playerCard, recipient: player.id });
-    await sleep(1000);
+  const interval = setInterval(() => {
+    table.bettingTimer--;
+    io.to(tableId).emit("betting-timer", table.bettingTimer);
+
+    if (table.bettingTimer <= 0) {
+      clearInterval(interval);
+      handleBettingComplete(table, io, tableId);
+    }
+  }, 1000);
+};
+
+const handleBettingComplete = async (table: GameState, io: Server, tableId: string) => {
+  table.players.forEach(player => {
+    player.status = player.bets.length === 0 ? "NOT_BETTED" : "BETTED";
+  });
+
+  if (table.deck.length < 20) {
+    table.deck = createDeck();
   }
 
-  // Second dealer card (face down)
-  const dealerCard2 = table.deck.pop();
-  if (!dealerCard2) return; // No more cards (never happen but just in case)
-  io.to(table.tableId).emit("deck-updated", table.deck);
-
-  dealerCard2.owner = "DEALER";
-  dealerCard2.isHidden = true;
-  table.cards.push(dealerCard2);
-  io.to(table.tableId).emit("card-distributed", { card: dealerCard2, recipient: "DEALER" });
-  await sleep(1000);
-
-  // Second round of player cards
-  for (const player of table.players) {
-    const playerCard = table.deck.pop();
-    if (!playerCard) return; // No more cards (never happen but just in case)
-    io.to(table.tableId).emit("deck-updated", table.deck);
-
-    playerCard.owner = "PLAYER";
-    playerCard.isHidden = false;
-    player.cards.push(playerCard);
-    io.to(table.tableId).emit("card-distributed", { card: playerCard, recipient: player.id });
-    await sleep(1000);
-  }
+  updateTableStatus(io, tableId, table, "WAITING_FOR_DISTRIBUTES");
+  await distributeInitialCards(table, io);
+  
+  table.players.forEach(player => player.status = "NOT_CHOSEN");
+  updateTableStatus(io, tableId, table, "WAITING_FOR_PLAYER_CHOICES");
+  io.to(tableId).emit("players-update", table.players);
 };
 
 export const execute: EventExecute<StartData> = async (io: Server, socket: Socket, data, callback) => {
   const { tableId } = data;
-  if (!tableId || !tableId) {
+  if (!tableId) {
     return callback({ success: false, error: "Invalid data" });
   }
 
@@ -79,36 +139,8 @@ export const execute: EventExecute<StartData> = async (io: Server, socket: Socke
     return callback({ success: false, error: "Only the host can start the game" });
   }
 
-  table.gameStatus = "WAITING_FOR_BETS";
-  io.to(tableId).emit("game-status-changed", table.gameStatus);
-
-  table.bettingTimer = 2;
-  io.to(tableId).emit("betting-timer", table.bettingTimer);
-
-  const interval = setInterval(() => {
-    table.bettingTimer--;
-    io.to(tableId).emit("betting-timer", table.bettingTimer);
-
-    if (table.bettingTimer <= 0) {
-      table.players.forEach((player) => {
-        if (player.bets.length === 0) player.status = "NOT_BETTED";
-        else player.status = "BETTED";
-      });
-
-      clearInterval(interval);
-      if (table.deck.length < 20) table.deck = createDeck();
-      table.gameStatus = "WAITING_FOR_DISTRIBUTES";
-      io.to(tableId).emit("game-status-changed", table.gameStatus);
-
-      distributeInitialCards(table, io).then(() => {
-        table.gameStatus = "WAITING_FOR_PLAYER_CHOICES";
-        table.players.forEach((player) => player.status = "NOT_CHOSEN");
-
-        io.to(tableId).emit("game-status-changed", table.gameStatus);
-        io.to(tableId).emit("players-update", table.players);
-      });
-    }
-  }, 1000);
+  updateTableStatus(io, tableId, table, "WAITING_FOR_BETS");
+  startBettingPhase(table, io, tableId);
 
   return callback({ 
     success: true,
