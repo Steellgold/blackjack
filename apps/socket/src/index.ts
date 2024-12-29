@@ -1,52 +1,38 @@
-import Fastify from "fastify";
-import fastifyStatic from "@fastify/static";
+import fastify from "fastify";
 import { Server } from "socket.io";
+import { createServer } from "http";
 import { load } from "./manager/event.manager";
 import { execute as leaveTableExecute } from "./event/leave-table";
-import path from "path";
 
-const app = Fastify();
+const app = fastify();
+const httpServer = createServer(app.server);
 
-function startServer() {
-  app.register(fastifyStatic, {
-    root: path.join(__dirname),
-    prefix: '/' 
-  });
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  },
+});
 
-  const isProduction = process.env.NODE_ENV === "production";
-  const io = new Server(app.server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
+io.on("connection", (socket) => {
+  console.log("✌️ New user connected");
+  load(io, socket);
+
+  socket.on("disconnect", () => {
+    console.log("👋 User disconnected");
+
+    try {
+      leaveTableExecute(io, socket, undefined, (response) => {
+        if (!response.success) {
+          console.log("Error during leave-table:", response.error);
+        }
+      });
+    } catch (error) {
+      console.error("Error handling disconnect:", error);
     }
   });
+});
 
-  io.on("connection", (socket) => {
-    console.log("✌️ New user connected from:", socket.handshake.headers.origin);
-    load(io, socket);
-
-    socket.on("disconnect", () => {
-      console.log("👋 User disconnected");
-      try {
-        leaveTableExecute(io, socket, undefined, (response) => {
-          if (!response.success) {
-            console.log("Error during leave-table:", response.error);
-          }
-        });
-      } catch (error) {
-        console.error("Error handling disconnect:", error);
-      }
-    });
-  });
-
-  app.listen({ port: 3001 })
-    .then(() => {
-      console.log("🚀 Server is running on " + (isProduction ? "http://socket.blackjack.steellgold.fr/" : "http://localhost:3001"));
-    })
-    .catch((err) => {
-      app.log.error(err);
-      process.exit(1);
-    });
-}
-
-startServer();
+httpServer.listen(3001, () => {
+  console.log("🚀 Server is running on http://localhost:3001");
+});
