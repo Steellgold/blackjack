@@ -134,8 +134,8 @@ const Page = () => {
 
                 <DialogDescription>
                   {lang === "fr"
-                    ? "Entrez le nombre de joueurs qui peuvent rejoindre la partie. Vous pouvez aussi choisir un mot de passe pour protéger la partie ainsi que la balance de départ pour chaque joueur."
-                    : "Enter the number of players who can join the game. You can also choose a password to protect the game as well as the starting balance for each player."
+                    ? "Entrez le nombre de joueurs qui peuvent rejoindre la partie, ainsi que la balance de départ pour chaque joueur."
+                    : "Enter the number of players who can join the game, as well as the starting balance for each player."
                   }
                 </DialogDescription>
               </DialogHeader>
