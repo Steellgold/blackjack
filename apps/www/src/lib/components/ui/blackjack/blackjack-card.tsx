@@ -23,7 +23,7 @@ export const BlackjackCard: Component<BlackjackCardProps> = ({
       "bg-white bg-opacity-10 border p-3 border-white border-opacity-20",
       "transition-colors duration-300 ease-in-out",
       className, {
-        "bg-red-500 border-red-600": variant === "destructive",
+        "bg-red-500 border-red-600 bg-opacity-25": variant === "destructive",
         "bg-green-500 border-green-300": variant === "success",
         "bg-yellow-500 border-yellow-300": variant === "warning",
 
