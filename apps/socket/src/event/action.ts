@@ -47,7 +47,6 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
     io.to(tableId).emit("game-status-changed", "WAITING_FOR_PLAYER_CHOICES");
 
     if (standingPlayers.length + table.players.filter(p => p.status === "BUST").length === table.players.length) {
-      console.log("All players have chosen");
       table.gameStatus = "WAITING_FOR_DEALER";
       io.to(tableId).emit("game-status-changed", table.gameStatus);
 
@@ -75,10 +74,7 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
           sleep(1000, false);
 
           dealerHandValue = getHandValue(dealerHand);
-          if (dealerHandValue >= 17){
-            canReset = true;
-            console.log("Dealer hand value is 17 or more");
-          }
+          if (dealerHandValue >= 17) canReset = true;
 
           io.to(tableId).emit("cards-updated", {
             recipient: "DEALER",
@@ -87,16 +83,14 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
         }
       } else {
         canReset = true;
-        console.log("Can reset without drawing more cards");
       }
 
       if (canReset) {
-        console.log("Dealer hand value:", dealerHandValue);
-
         if (dealerHandValue > 21) {
           table.players.forEach(player => {
             if (player.status === "BUST") return;
             player.status = "WIN";
+            player.balance += player.bets.reduce((acc, curr) => acc + curr, 0) * 2;
           });
 
           io.to(tableId).emit("players-update", table.players);

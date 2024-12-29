@@ -46,16 +46,6 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
   useEffect(() => {
     if (!socket) return;
 
-    console.log("Setting up socket listeners...");
-
-    socket.on("connect", () => {
-      console.log("Socket connected: ", socket.id);
-    });
-  
-    socket.on("error", (err) => {
-      console.error("Socket error: ", err);
-    });
-  
     socket.on("players-update", (players) => {
       setPlayers(players);
     });  
@@ -112,10 +102,7 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
     });
 
     socket.on("game-status-changed", (status) => {
-      console.log("Game status:", gameStatus);
-      console.log("Game status received:", status);
       setGameStatus(status);
-      console.log("Game status set:", gameStatus);
     });
 
     return () => {
@@ -161,7 +148,6 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
           setBettingTimer(data.data.state.bettingTimer);
           setExpectedPlayers(data.data.state.expectedPlayers);
           setBaseBalance(data.data.state.baseBalance);
-          console.log("Table joined:", data.data.tableId);
           resolve(data);
         } else {
           resolve(data);
