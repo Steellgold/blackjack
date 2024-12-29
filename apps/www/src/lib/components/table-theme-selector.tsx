@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/lib/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/lib/components/ui/dialog";
 import { useLang } from "@/lib/hooks/use-lang";
 import { BlackjackButton } from "@/lib/components/ui/blackjack/blackjack-button";
 import { Palette } from "lucide-react";
@@ -26,10 +26,13 @@ export const TableThemeDialog = () => {
           <DialogTitle>
             {lang === "fr" ? "Thème de la table" : "Table Theme"}
           </DialogTitle>
+          <DialogDescription>
+            {lang === "fr" ? "Choisissez un thème pour la table" : "Choose a theme for the table"}
+          </DialogDescription>
         </DialogHeader>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
-          {Object.values(TABLE_THEMES).map((tableTheme) => (
+        
+        <div className="grid grid-cols-2 gap-2 mt-4 w-full">
+          {Object.values(TABLE_THEMES).map((tableTheme, index, array) => (
             <button
               key={tableTheme.name}
               onClick={() => {
@@ -40,7 +43,10 @@ export const TableThemeDialog = () => {
                 "transition-all duration-200 rounded-lg overflow-hidden",
                 {
                   "border-2 border-white/60": theme === tableTheme.name,
-                  "opacity-80": theme !== tableTheme.name
+                  "opacity-80": theme !== tableTheme.name,
+                  "col-span-2": Object.values(TABLE_THEMES).length === 1 ||
+                  (index === Object.values(TABLE_THEMES).length - 1 && 
+                   Object.values(TABLE_THEMES).length % 2 !== 0)
                 }
               )}
             >

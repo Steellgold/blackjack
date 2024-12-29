@@ -19,6 +19,15 @@ export const TABLE_THEMES: Record<string, TableTheme> = {
       en: "The classic casino theme with its traditional green felt"
     }
   },
+  sky: {
+    name: "sky",
+    label: { fr: "Ciel", en: "Sky" },
+    background: "bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-sky-900 to-sky-800",
+    description: {
+      fr: "Un thème bleu et aérien pour une ambiance de jeu relaxante",
+      en: "A blue and airy theme for a relaxing gaming atmosphere"
+    }
+  },
   modern: {
     name: "modern",
     label: { fr: "Moderne", en: "Modern" },
@@ -26,15 +35,6 @@ export const TABLE_THEMES: Record<string, TableTheme> = {
     description: {
       fr: "Un design moderne et élégant avec des tons sombres",
       en: "A modern and elegant design with dark tones"
-    }
-  },
-  luxury: {
-    name: "luxury",
-    label: { fr: "Luxe", en: "Luxury" },
-    background: "bg-gradient-to-br from-amber-900 to-amber-800",
-    description: {
-      fr: "Une ambiance luxueuse avec des tons dorés",
-      en: "A luxurious atmosphere with golden tones"
     }
   },
   neon: {
@@ -47,22 +47,13 @@ export const TABLE_THEMES: Record<string, TableTheme> = {
       en: "A cyberpunk style with neon effects"
     }
   },
-  exotic: {
-    name: "exotic",
-    label: { fr: "Exotique", en: "Exotic" },
-    background: "bg-gradient-to-br from-orange-900 to-green-800",
+  darkness: {
+    name: "darkness",
+    label: { fr: "Obscurité", en: "Darkness" },
+    background: "bg-gradient-to-bl from-zinc-900 from-0% via-slate-900 via-100% to-blue-900 to-100%",
     description: {
-      fr: "Un thème exotique avec des couleurs vives",
-      en: "An exotic theme with bright colors"
-    }
-  },
-  pastel: {
-    name: "pastel",
-    label: { fr: "Pastel", en: "Pastel" },
-    background: "bg-gradient-to-br from-fuchsia-900 to-sky-800",
-    description: {
-      fr: "Un design pastel avec des tons doux et apaisants",
-      en: "A pastel design with soft and soothing tones"
+      fr: "Le thème sombre ultime pour les joueurs de l'ombre",
+      en: "The ultimate dark theme for shadow players"
     }
   }
 };
