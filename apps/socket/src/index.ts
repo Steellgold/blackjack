@@ -5,9 +5,7 @@ import { load } from "./manager/event.manager";
 import { execute as leaveTableExecute } from "./event/leave-table";
 import path from "path";
 
-const app = Fastify({
-  logger: true
-});
+const app = Fastify();
 
 function startServer() {
   app.register(fastifyStatic, {
@@ -43,7 +41,7 @@ function startServer() {
 
   app.listen({ port: 3001 })
     .then(() => {
-      console.log("🚀 Server is running on " + isProduction ? "http://socket.blackjack.steellgold.fr/" : "http://localhost:3001");
+      console.log("🚀 Server is running on " + (isProduction ? "http://socket.blackjack.steellgold.fr/" : "http://localhost:3001"));
     })
     .catch((err) => {
       app.log.error(err);
