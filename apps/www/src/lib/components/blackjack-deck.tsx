@@ -1,19 +1,16 @@
 "use client";
 
-import { useLang } from "@/lib/hooks/use-lang";
-import { BlackjackCard } from "./blackjack-card";
+import { BlackjackCard, EmptyBlackjackCard } from "./blackjack-card";
 import { BlackjackCard as UIBlackjackCard } from "./ui/blackjack/blackjack-card";
 import { useState } from "react";
 import { useBlackjack } from "../hooks/use-blackjack";
 
 export const BlackjackDeck = () => {
   const { deck } = useBlackjack();
-  const { lang } = useLang();
-
   const [isHover, setIsHover] = useState(false);
 
   return (
-    <UIBlackjackCard className="hidden sm:block absolute top-1/2 transform -translate-y-1/2 right-5">
+    <UIBlackjackCard className="hidden sm:block">
       <div
         className="relative w-24 h-36 rounded-md"
         onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
@@ -29,11 +26,7 @@ export const BlackjackDeck = () => {
             <BlackjackCard rank={card.rank} suit={card.suit} isHidden isReloadCard={card.isReloadCard} />
           </div>
         )) : (
-          <div className="select-none">
-            <span>
-              {lang === "fr" ? "Talon vide" : "Empty deck"}
-            </span>
-          </div>
+          <EmptyBlackjackCard />
         )}
       </div>
     </UIBlackjackCard>

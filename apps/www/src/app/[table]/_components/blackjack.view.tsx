@@ -10,9 +10,10 @@ import type { PropsWithChildren } from "react";
 import OtherPlayersCardsCard from "./other-players-cards";
 import { cn } from "@/lib/utils";
 import { BlackjackBadge } from "@/lib/components/ui/blackjack/blackjack-badge";
+import { BlackjackDeck } from "@/lib/components/blackjack-deck";
 
 export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
-  const { players, cards: dealerCards, id } = useBlackjack();
+  const { players, cards: dealerCards, id, deck } = useBlackjack();
 
   const player = players.find(player => player.id === id);
   if (!player) return <div className="bg-red-500">Player not found !</div>;
@@ -50,9 +51,15 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
         </div>
       </div>
 
-      <UIBlackjackCard className="absolute bottom-4 right-4 p-2">
-        <BlackjackBets />
-      </UIBlackjackCard>
+      <div className="absolute bottom-0 right-0 p-2 flex flex-row gap-1.5">
+        <div className="flex flex-col justify-end gap-0.5">
+          <UIBlackjackCard>
+            <BlackjackBets />
+          </UIBlackjackCard>
+        </div>
+
+        <BlackjackDeck  />
+      </div>
 
       <OtherPlayersCardsCard />
     </div>
