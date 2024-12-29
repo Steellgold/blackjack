@@ -11,8 +11,12 @@ import OtherPlayersCardsCard from "./other-players-cards";
 import { BlackjackDeck } from "@/lib/components/blackjack-deck";
 import { useLang } from "@/lib/hooks/use-lang";
 import { EndedGameStatues } from "./statues.endgame";
+import { cn } from "@/lib/utils";
+import { useMediaQuery } from "usehooks-ts";
 
 export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+
   const { players, cards: dealerCards, id, deck, gameStatus, baseBalance } = useBlackjack();
   const { lang } = useLang();
 
@@ -21,6 +25,7 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
 
   const dealerHandValue = getHandValue(dealerCards);
   const playerHandValue = getHandValue(player.cards);
+
 
   return (
     <div className="h-screen flex flex-col items-center justify-between p-3">
@@ -54,7 +59,10 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
         </div>
       </div>
 
-      <div className="absolute bottom-0 right-0 p-2 flex flex-row gap-1.5">
+      <div className={cn("absolute bottom-0 p-3 flex flex-row gap-1.5", {
+        "left-0": isMobile,
+        "right-0": !isMobile
+      })}>
         <div className="flex flex-col justify-end gap-1">
           <UIBlackjackCard>
             <p className="text-center">{player.balance}{lang == "fr" ? "€" : "$"}</p>

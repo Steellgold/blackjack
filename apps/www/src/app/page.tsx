@@ -78,11 +78,9 @@ const Page = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <BlackjackButton size="small" onClick={() => handleTable("create-solo")}>
-              {lang === "fr" ? "Jouer tout seul" : "Play alone"}
-            </BlackjackButton>
-          </div>
+          <BlackjackButton size="small" onClick={() => handleTable("create-solo")} className="w-full sm:w-auto">
+            {lang === "fr" ? "Jouer tout seul" : "Play alone"}
+          </BlackjackButton>
         </BlackjackCard>
 
         <BlackjackCard className="flex flex-col sm:flex-row justify-between items-left gap-3 sm:gap-1 p-3 w-full">
@@ -103,7 +101,7 @@ const Page = () => {
               onChange={(e) => setTableCode(e.target.value)}
               placeholder={lang === "fr" ? "Code de table" : "Table code"} 
             />
-            <BlackjackButton size="small" onClick={() => handleTable("join")}>
+            <BlackjackButton size="small" onClick={() => handleTable("join")} disabled={tableCode === ""}>
               {lang === "fr" ? "Rejoindre" : "Join"}
             </BlackjackButton>
           </div>
@@ -122,7 +120,7 @@ const Page = () => {
 
           <Dialog>
             <DialogTrigger asChild>
-              <BlackjackButton size="small">
+              <BlackjackButton size="small" className="w-full sm:w-auto mt-2 sm:mt-0">
                 {lang === "fr" ? "Créer" : "Create"}
               </BlackjackButton>
             </DialogTrigger>
@@ -192,7 +190,7 @@ const Page = () => {
 
 
       <div className="absolute bottom-0 left-0 p-3 flex flex-col text-xs text-center bg-black bg-opacity-50 w-full">
-        <span className="text-sm text-center mb-1 flex items-center justify-center gap-2">
+        <span className="text-sm text-center mb-1 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2">
           <div>
             {lang === "fr" ? "Développé par" : "Developed by"}{" "}
             <Link className="text-green-500 hover:underline" href="https://x.com/Steellgold" target="_blank">
@@ -200,7 +198,7 @@ const Page = () => {
             </Link>
           </div>
 
-          &bull;
+          <span className="hidden sm:block">&bull;</span>
 
           <Link
             className={cn(

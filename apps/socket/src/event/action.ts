@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import type { EventExecute } from "../manager/event.manager";
 import { tables } from "../data";
-import type { Card, GameState } from "@blackjack/game/types";
+import type { GameState } from "@blackjack/game/types";
 import { drawCard, getHandValue } from "@blackjack/game/utils";
 import { sleep } from "../utils";
 
@@ -33,7 +33,7 @@ const checkAllPlayersChosen = (io: Server, table: GameState) => {
       const handValue = getHandValue(player.cards);
       if (handValue > 21) {
         player.status = "BUST";
-      } else if (handValue === 21) {
+      } else if (handValue === 21 && player.cards.length === 2) { // Blackjack
         player.status = "STAND";
       } else {
         player.status = "NOT_CHOSEN";

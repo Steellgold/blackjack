@@ -29,10 +29,6 @@ export const BlackjackDeck = () => {
           <EmptyBlackjackCard />
         )}
       </div>
-
-      <p className="absolute bottom-0 right-0 p-1 text-xs font-semibold text-gray-400">
-        {deck.length}
-      </p>
     </UIBlackjackCard>
   );
 }

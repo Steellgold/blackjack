@@ -32,12 +32,12 @@ export const BlackjackBet = () => {
   return (
     <div>
       <BlackjackCard className="flex flex-col items-center gap-2">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center flex-col sm:flex-row gap-0.5 sm:gap-1.5">
           <span className="text-lg">
             {lang === "fr" ? "Choix des mises" : "Betting"}
           </span>
 
-          &bull;
+          <span className="hidden sm:block">&bull;</span>
 
           <span>
             {lang == "fr" ? `${bettingTimer}s pour miser` : `${bettingTimer}s to bet`}
@@ -45,7 +45,7 @@ export const BlackjackBet = () => {
         </div>
 
         <div className={cn(
-          "grid grid-cols-3 gap-2",
+          "grid grid-cols-4 gap-2",
           "sm:flex sm:items-center sm:gap-1.5"
         )}>
           <BlackjackButton

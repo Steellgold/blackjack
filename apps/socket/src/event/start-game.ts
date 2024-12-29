@@ -21,7 +21,14 @@ const DISTRIBUTION_SEQUENCE: CardDistribution[] = [
   { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },  // First round players
   { owner: "DEALER", isHidden: false, recipient: "DEALER" },  // First dealer card
   { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },  // Second round players
-  { owner: "DEALER", isHidden: true, recipient: "DEALER" }    // Second dealer card
+  { owner: "DEALER", isHidden: true, recipient: "DEALER" },    // Second dealer card
+
+  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
+  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
+  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
+  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
+  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
+  { owner: "PLAYER", isHidden: false, recipient: "PLAYER" },
 ];
 
 const updateTableStatus = (io: Server, tableId: string, table: GameState, status: GameStatus) => {
@@ -140,6 +147,10 @@ export const execute: EventExecute<StartData> = async (io: Server, socket: Socke
   }
 
   updateTableStatus(io, tableId, table, "WAITING_FOR_BETS");
+
+  table.deck = createDeck();
+  io.to(tableId).emit("deck-updated", table.deck);
+
   startBettingPhase(table, io, tableId);
 
   return callback({ 

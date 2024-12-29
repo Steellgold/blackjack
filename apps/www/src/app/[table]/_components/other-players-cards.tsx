@@ -5,9 +5,14 @@ import { useBlackjack } from "@/lib/hooks/use-blackjack";
 import { cn } from "@/lib/utils";
 import type { ReactElement } from "react";
 import type { Player } from "@blackjack/game/types";
+import { useMediaQuery } from "usehooks-ts";
+import { Sheet, SheetContent, SheetTrigger } from "@/lib/components/ui/sheet";
+import { BlackjackButton } from "@/lib/components/ui/blackjack/blackjack-button";
+import { Users } from "lucide-react";
 
 export const OtherPlayersCardsCard = (): ReactElement => {
   const { id, players } = useBlackjack();
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   if (!players) return <div className="bg-red-500">Players not found !</div>;
   if (players.length < 2) return <></>;
@@ -25,7 +30,7 @@ export const OtherPlayersCardsCard = (): ReactElement => {
         <span className="font-bold">{getHandValue(player.cards)}</span>
       </div>
 
-      <div className="flex flex-row gap-1 w-full">
+      <div className="grid grid-cols-4 mt-1 gap-1 w-full">
         {player.cards.map((card, index) => (
           <div key={index} className={cn("flex flex-row items-center gap-1 bg-white p-1.5 rounded-md", {
             "text-[#e04f4f]": ["Hearts", "Diamonds"].includes(card.suit),
@@ -37,6 +42,27 @@ export const OtherPlayersCardsCard = (): ReactElement => {
         ))}
       </div>
     </BlackjackCard>
+  );
+
+  if (isMobile) return (
+    <div className="flex flex-col sm:flex-row gap-1 absolute top-11 right-3">
+      <Sheet>
+        <SheetTrigger asChild>
+          <BlackjackButton size="small">
+            <Users className="h-4 w-4" />
+          </BlackjackButton>
+        </SheetTrigger>
+        <SheetContent side={"left"} showCloseButton={false} className="p-2">
+          <div className="w-full">
+            <div className="grid gap-2 auto-rows-auto">
+              {otherPlayers.map(player => (
+                <PlayerCard key={player.id} player={player} />
+              ))}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 
   return (

@@ -1,10 +1,10 @@
 "use client";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/lib/components/ui/dialog";
-import { Moon, Pen, RefreshCcw, Sun } from "lucide-react";
+import { Moon, Pen, RefreshCcw, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLang } from "@/lib/hooks/use-lang";
-import { useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { BlackjackButton } from "./ui/blackjack/blackjack-button";
 import { BlackjackCard } from "./ui/blackjack/blackjack-card";
 import { usePlayerStore } from "../hooks/store/use-player.store";
@@ -13,41 +13,70 @@ import { dylan } from "@dicebear/collection";
 import { toast } from "sonner";
 import { BlackjackInput } from "./ui/blackjack/blackjack-input";
 import { generateName } from "just-random-names";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { useMediaQuery } from "usehooks-ts";
 
 export const BlackjackButtons = (): ReactElement => {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+
+  if (!isMobile) {
+    return (
+      <div className="flex flex-col sm:flex-row gap-1 absolute top-3 right-3">
+        <ProfileCard />
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-1 absolute top-3 right-3">      
+      <Sheet>
+        <SheetTrigger asChild>
+          <BlackjackButton size="small">
+            <User className="h-4 w-4" />
+          </BlackjackButton>
+        </SheetTrigger>
+        <SheetContent side={"top"} showCloseButton={false} className="p-2">
+          <div className="w-full">
+          <ProfileCard />
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
+  )
+}
+
+const ProfileCard = (): ReactElement => {
   const { theme, setTheme } = useTheme();
   const { playerName } = usePlayerStore();
 
   const avatar = createAvatar(dylan, { seed: playerName || "Joueur" }).toDataUri();
 
   return (
-    <div className="flex flex-col sm:flex-row gap-1 absolute top-3 right-3">
-      <BlackjackCard className="bg-opacity-5 border-opacity-10 p-2 flex flex-row gap-2 items-center">
-        <img src={avatar} alt="Avatar" className="rounded-md w-[60px] h-[60px]" />
-          
-        <div className="flex flex-col gap-1">
-          <h1 className="text-lg font-semibold">
-            {playerName == "" ? "Joueur" : playerName}
-          </h1>
+    <BlackjackCard className="bg-opacity-5 border-opacity-10 p-2 flex flex-row gap-2 items-center">
+      <img src={avatar} alt="Avatar" className="rounded-md w-[60px] h-[60px]" />
+        
+      <div className="flex flex-col gap-1">
+        <h1 className="text-lg font-semibold">
+          {playerName == "" ? "Joueur" : playerName}
+        </h1>
 
-          <div className="flex flex-row gap-1">
-            <BlackjackButton
-              size="small"
-              className="justify-center bg-white bg-opacity-10 text-white rounded-md px-3 py-2 flex items-center"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            >
-              <Sun size={16} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon size={16} className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Toggle theme</span>
-            </BlackjackButton>
+        <div className="flex flex-row gap-1">
+          <BlackjackButton
+            size="small"
+            className="justify-center bg-white bg-opacity-10 text-white rounded-md px-3 py-2 flex items-center"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            <Sun size={16} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon size={16} className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </BlackjackButton>
 
-            <SwitchLang />
+          <SwitchLang />
 
-            <ChangeNameDialog />
-          </div>
+          <ChangeNameDialog />
         </div>
-      </BlackjackCard>
-    </div>
+      </div>
+    </BlackjackCard>
   )
 }
 
@@ -64,9 +93,16 @@ export const SwitchLang = (): ReactElement => {
 const ChangeNameDialog = (): ReactElement => {
   const { playerName, setPlayerName } = usePlayerStore();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [canCloseDialog, setCanCloseDialog] = useState(true);
   const [newName, setNewName] = useState(playerName);
   const { lang } = useLang();
+
+  useEffect(() => {
+    if (playerName === "") {
+      setIsDialogOpen(true);
+    }
+  }, [playerName]);
+
+  const canCloseDialog = playerName !== "";
 
   return (
     <Dialog

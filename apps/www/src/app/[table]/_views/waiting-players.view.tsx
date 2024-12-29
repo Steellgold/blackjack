@@ -7,10 +7,15 @@ import { useBlackjack } from "@/lib/hooks/use-blackjack";
 import { useLang } from "@/lib/hooks/use-lang";
 import { dylan } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
-import { Copy } from "lucide-react";
+import { Copy, CopyCheck } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useCopyToClipboard } from "usehooks-ts";
 
 export const WaitingPlayers = () => {
   const { lang } = useLang();
+  const [_, copy] = useCopyToClipboard();
+  const [copied, setCopied] = useState(false);
 
   const {
     tableId,
@@ -68,7 +73,7 @@ export const WaitingPlayers = () => {
         </div>
 
         <div className="flex items-center justify-end gap-1">
-          <div className="flex sm:flex-col justify-end gap-1">
+          <div className="flex flex-col w-full sm:w-auto justify-end gap-1">
             <BlackjackButton
               size="small"
               disabled={
@@ -80,8 +85,16 @@ export const WaitingPlayers = () => {
               {lang === "fr" ? "Commencer la partie" : "Start the game"}
             </BlackjackButton>
 
-            <BlackjackButton size="small" className="flex items-center gap-1.5">
-              <Copy className="w-4 h-4" />
+            <BlackjackButton size="small" className="flex items-center gap-1.5" onClick={() => {
+              copy(tableId);
+              setCopied(true);
+              toast.success(lang === "fr" ? "Code copié" : "Code copied");
+
+              setTimeout(() => {
+                setCopied(false);
+              }, 1000);
+            }}>
+              {copied ? <CopyCheck className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               {lang === "fr" ? "Copier le code" : "Copy code"}
             </BlackjackButton>
           </div>
