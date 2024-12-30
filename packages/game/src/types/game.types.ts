@@ -39,6 +39,19 @@ export type Player = {
   status: PlayerStatus;
 };
 
+export type ChatMessage = {
+  content: string;
+  sender: string;
+  timestamp: Date;
+  playerId: string;
+  tableId: string;
+};
+
+export type UnreadMessage = {
+  messageId: string;
+  timestamp: Date;
+};
+
 export type GameState = {
   isSolo: boolean;
   expectedPlayers: number; // Expected number of players
@@ -60,6 +73,12 @@ export type GameState = {
 };
 
 export type BlackjackState = GameState & {
+  chatMessages: ChatMessage[];
+  sendChatMessage: (content: string) => Promise<void>;
+
+  unreadMessages: UnreadMessage[];
+  markMessagesAsRead: () => void;
+
   canJoinTable: (tableId: string) => Promise<EventResponse<TableJoinableResponse>>; // Check if a player can join a table
 
   createTable: (data: { expectedPlayers: number; baseBalance: number; }) => Promise<EventResponse<TableCreatedResponse>>; // Create a new table

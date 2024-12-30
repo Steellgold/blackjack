@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils";
 import React, { type PropsWithChildren } from "react";
 import type { Component } from "../../utils/component";
 
-export type BlackjackCardVariant = "default" | "destructive" | "success" | "warning"; 
+export type BlackjackCardVariant = "default" | "destructive" | "success" | "warning";
 
 type BlackjackCardProps = React.HTMLAttributes<HTMLDivElement> & {
   variant?: BlackjackCardVariant;
+  blurredMax?: boolean;
 
   connected?: false | "to-top" | "to-bottom";
 }
@@ -16,6 +17,7 @@ export const BlackjackCard: Component<BlackjackCardProps> = ({
   children,
   className,
   variant = "default",
+  blurredMax = false,
   connected = false,
   ...props }) => {
   return (
@@ -30,6 +32,8 @@ export const BlackjackCard: Component<BlackjackCardProps> = ({
         "rounded-md": !connected,
         "rounded-t-md": connected === "to-bottom",
         "rounded-b-md": connected === "to-top",
+
+        "backdrop-blur-3xl": blurredMax
       }
     )} {...props}>
       {children}

@@ -8,12 +8,17 @@ type BlackjackBadgeVariant = "default" | "success" | "destructive";
 
 type BlackjackBadgeProps = DetailedHTMLProps<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement> & {
   variant?: BlackjackBadgeVariant;
+  size?: "number" | "default";
+
+  blurred?: boolean;
 };
 
 export const BlackjackBadge: Component<BlackjackBadgeProps> = ({ 
   children, 
   className, 
   variant = "default",
+  blurred = true,
+  size = "default",
   ...props 
 }) => {
   return (
@@ -25,6 +30,15 @@ export const BlackjackBadge: Component<BlackjackBadgeProps> = ({
           "bg-white/10 border border-white/30": variant === "default",
           "bg-green-500/20 border border-green-500/30": variant === "success",
           "bg-red-500/20 border border-red-500/30": variant === "destructive",
+
+          // Not blurred & bg color
+          "backdrop-blur-0": !blurred,
+          "bg-white": !blurred && variant === "default",
+          "bg-green-500": !blurred && variant === "success",
+          "bg-red-500": !blurred && variant === "destructive",
+
+          // Size
+          "text-xs px-1 py-0": size === "number",
         },
         className
       )} 

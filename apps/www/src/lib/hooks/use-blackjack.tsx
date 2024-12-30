@@ -1,6 +1,20 @@
 "use client";
 
-import type { TableStartResponse, BlackjackState, Card, EventResponse, GameStatus, Player, TableCreatedResponse, TableJoinableResponse, TableJoinedResponse, ChipValue, TableBetResponse } from "@blackjack/game/types";
+import type {
+  TableStartResponse,
+  BlackjackState,
+  Card,
+  EventResponse,
+  GameStatus,
+  Player,
+  TableCreatedResponse,
+  TableJoinableResponse,
+  TableJoinedResponse,
+  ChipValue,
+  TableBetResponse,
+  ChatMessage,
+  UnreadMessage
+} from "@blackjack/game/types";
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
@@ -31,6 +45,9 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
   const [gameStatus, setGameStatus] = useState<GameStatus>("WAITING_FOR_PLAYERS");
   const [bettingTimer, setBettingTimer] = useState<number>(0);
   const [backToBetsTimer, setBackToBetsTimer] = useState<number>(0);
+
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [unreadMessages, setUnreadMessages] = useState<UnreadMessage[]>([]);
 
   useEffect(() => {
     if (!socket) {
@@ -105,10 +122,29 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
       setGameStatus(status);
     });
 
+    socket.on("chat-message-received", (message: ChatMessage) => {
+      setChatMessages(prev => [...prev, message]);
+      
+      if (message.playerId !== socket.id) {
+        setUnreadMessages(prev => [...prev, {
+          messageId: message.timestamp.toString() + message.playerId,
+          timestamp: message.timestamp
+        }]);
+      }
+    });
+  
+
     return () => {
       socket.off("connect");
       socket.off("players-update");
-      socket.off("error");
+      socket.off("deck-updated");
+      socket.off("betting-timer");
+      socket.off("back-to-bets-timer");
+      socket.off("card-distributed");
+      socket.off("ended");
+      socket.off("cards-updated");
+      socket.off("game-status-changed");
+      socket.off("chat-message-received");
     };
   }, [socket]);
 
@@ -258,10 +294,39 @@ export const BlackjackProvider: Component<PropsWithChildren> = ({ children }) =>
     });
   };
 
+  const sendChatMessage = async (content: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if (!tableId || !socket) {
+        reject({ success: false, error: "No table or socket connection" });
+        return;
+      }
+  
+      socket.emit("chat-message", { 
+        tableId, 
+        content 
+      }, (response: EventResponse<void>) => {
+        if (response.success) {
+          resolve();
+        } else {
+          reject(response);
+        }
+      });
+    });
+  };
+
+  const markMessagesAsRead = () => {
+    setUnreadMessages([]);
+  };
+
   const value: BlackjackState = {
     isSolo: false, // TODO: Implement single player mode (Just auto-launch the process when the player joins)
     id: socket?.id ?? "", // Socket ID
 
+    chatMessages,
+    sendChatMessage,
+    unreadMessages,
+    markMessagesAsRead,
+    
     expectedPlayers,
     baseBalance,
 

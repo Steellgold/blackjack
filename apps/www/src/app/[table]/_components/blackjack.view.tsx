@@ -11,6 +11,7 @@ import { useLang } from "@/lib/hooks/use-lang";
 import { EndedGameStatues } from "./statues.endgame";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "usehooks-ts";
+import { ChatComponent } from "@/lib/components/chat";
 
 export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -106,6 +107,7 @@ export const BlackjackView: Component<PropsWithChildren> = ({ children }) => {
         <BlackjackDeck />
       </div>
 
+      <ChatComponent />
       <OtherPlayersCardsCard />
     </div>
   );
