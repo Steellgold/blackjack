@@ -131,6 +131,8 @@ export const ChatComponent = () => {
   const { lang } = useLang();
   const { players, unreadMessages, markMessagesAsRead } = useBlackjack();
 
+  if (players.length < 2) return <></>;
+
   const hasUnreadMessages = unreadMessages.length > 0;
 
   return (
